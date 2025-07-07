@@ -337,6 +337,14 @@ void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontua
 
 void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2)
 {
+        struct carta carta_maior = jogar_carta(time_1[0]);
+    for (int i = 0; i < qtd_jagadores_cada_time - 1; i ++){
+        struct carta atual = jogar_carta(time_2[i]);
+        carta_maior = comparar_cartas(carta_maior, atual);
+        atual = jogar_carta(time_1[i + 1]);
+        carta_maior = comparar_cartas(carta_maior, atual);
+    }
+    carta_maior = comparar_cartas(carta_maior, jogar_carta(time_2)[quantidade_jogadores - 1]);
 }
 
 void pedir_carta_jogar(struct jogador jogador)
