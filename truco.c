@@ -428,7 +428,7 @@ struct carta jogar_carta(struct jogador *jogador)
 
     struct carta carta_jogada = jogador->mao[posicao_carta - 1];
 
-    retirar_carta_jogada(jogador, posicao_carta);
+    retirar_carta_jogada(jogador, posicao_carta - 1);
 
     return carta_jogada; // Ajusta para índice de array baseado em 0
 }
@@ -441,7 +441,7 @@ void pedir_truco(int *qtd_pontos_valendo)
 
 struct carta escolher_acao(struct jogador *jogador, int *valor_partida)
 {
-    printf("Vez do jogador: \n"); // Arrumar com a função
+    printf("Vez do jogador: %s\n", *jogador->nome);
     int opcao = 0;
     struct carta carta_jogada;
     while (opcao != 2)
