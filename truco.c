@@ -146,7 +146,7 @@ void embaralhar(struct jogador time_1[], struct jogador time_2[], int numero_jog
 
 struct carta comparar_cartas(struct carta carta_maior, struct carta carta_jogada);
 
-void quem_ganhou_rodada(struct jogador time[], int numero_jogadores_cada_time, int posicao_ganhador);
+void quem_ganhou_rodada(struct jogador time[], int posicao_ganhador);
 
 struct carta troca_repetida(struct carta nova_carta, struct carta cartas_em_jogo[]);
 
@@ -192,17 +192,24 @@ int main(void)
     printf("\n--- Configurando o Time 2 ---\n");
     adicionar_equipe(time_2_jogadores, qtd_jogadores_cada_time);
 
-    /*embaralhar(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, cartas_em_jogo, qtd_carta, &manilha);
+    embaralhar(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, cartas_em_jogo, qtd_carta, &vira);
+
+    rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, numero_jogadores, &pontuacao_time_1, &pontuacao_time_2);
+
+    printf("Potnuação Time 1: %d\n", pontuacao_time_1);
+    printf("Potnuação Time 2: %d\n", pontuacao_time_2);
 
     printf("\n--- Equipes Configuradas ---\n");
     printf("\nTime 1:\n");
     exibir_time(time_1_jogadores, qtd_jogadores_cada_time);
 
     printf("\nTime 2:\n");
-    exibir_time(time_2_jogadores, qtd_jogadores_cada_time);*/
+    exibir_time(time_2_jogadores, qtd_jogadores_cada_time);
+
+    // exibir_mao(time_1_jogadores[0].mao, time_1_jogadores[0].qtd_cartas_restantes);
 
     // Loop principal do jogo (atualmente comentado, pois a lógica central do jogo não está implementada)
-    while (pontuacao_time_1 < 12 && pontuacao_time_2 < 12)
+    /*while (pontuacao_time_1 < 12 && pontuacao_time_2 < 12)
     {
 
         int pontos_valendo = 1;
@@ -211,45 +218,54 @@ int main(void)
         printf("\n\n--------------------------------------\n");
         printf("      Vira da rodada: %d%c\n", vira.numero, vira.naipe);
         printf("--------------------------------------\n");
-        rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, numero_jogadores, &pontuacao_time_1, &pontuacao_time_2);
 
-        printf("O jogo está %d a %d\n", pontuacao_time_1, pontuacao_time_2); // Arrumar com a função
-
-        /*while (vitorias_time1 < 2 && vitorias_time2 < 2 &&  rodadas_jogadas < 3) {
-            printf("-------------- Inicio da rodada interna %d-------------", rodadas_jogadas+1);
+        while (vitorias_time1 < 2 && vitorias_time2 < 2 && rodadas_jogadas < 3)
+        {
+            printf("-------------- Inicio da rodada interna %d-------------", rodadas_jogadas + 1);
 
             int posicao_do_jogador = 0;
-            for(int i = 0; i < numero_jogadores; i++) {
-                printf("Vez do jogador: \n"); //Arrumar com a função
-                printf("O que você deseja fazer:\n 1:Exibir suas cartas\n 2:Jogar alguma carta\n 3:Pedir truco\n")
+            for (int i = 0; i < numero_jogadores; i++)
+            {
+                struct jogador *jogador_atual;
+                if (i % 2 == 0)
+                {
+                    jogador_atual = &time_1_jogadores[i / 2];
+                }
+                else
+                {
+                    jogador_atual = &time_2_jogadores[i / 2];
+                }
+                printf("Vez do jogador: \n"); // Arrumar com a função
+                printf("O que você deseja fazer:\n 1:Exibir suas cartas\n 2:Jogar alguma carta\n 3:Pedir truco\n");
                 int opcao;
-                scanf("%d", opcao);
-                switch (opçao) {
-                    case 1: {
-                        exibir_mao(jogador_atual->mao, jogador_atual->qtd_cartas_restantes);
-                        break;
-                    }
-                    case 2: {
-                        struct carta carta_jogada = jogar_carta(jogador_atual);
-                        printf("%s jogou: ", jogador_atual->nome);
-                        exibir_carta(carta_jogada);
-                        printf("\n");
-                        break;
-                    }
-                    case 3:
-                        pedir_truco(&pontos_valendo);
-                        printf("Agora a rodada vale %d pontos!\n", pontos_valendo);
-                        break;
-
+                scanf("%d", &opcao);
+                switch (opcao)
+                {
+                case 1:
+                {
+                    exibir_mao(jogador_atual->mao, jogador_atual->qtd_cartas_restantes);
+                    break;
+                }
+                case 2:
+                {
+                    struct carta carta_jogada = jogar_carta(jogador_atual);
+                    printf("%s jogou: ", jogador_atual->nome);
+                    exibir_carta(carta_jogada);
+                    printf("\n");
+                    break;
+                }
+                case 3:
+                    pedir_truco(&pontos_valendo);
+                    printf("Agora a rodada vale %d pontos!\n", pontos_valendo);
+                    break;
                 }
             }
-        posicao_do_jogador++;
-        //Falta implementar o contador das vitorais do time 1 e 2 e somar no int para acabar o while
+            posicao_do_jogador++;
+            // Falta implementar o contador das vitorais do time 1 e 2 e somar no int para acabar o while
         }
-        */
-    }
+    }*/
 
-    finalizar_jogo(time_1_jogadores, time_2_jogadores, pontuacao_time_1, pontuacao_time_2, qtd_jogadores_cada_time);
+    // finalizar_jogo(time_1_jogadores, time_2_jogadores, pontuacao_time_1, pontuacao_time_2, qtd_jogadores_cada_time);
 
     printf("\n--- Fim do jogo ---\n");
 
@@ -332,7 +348,6 @@ void exibir_time(struct jogador time[], int quantidade_jogadores)
     for (int i = 0; i < quantidade_jogadores; i++)
     {
         printf("--- Jogador: %s ---\n", time[i].nome);
-        exibir_mao(time[i].mao, time[i].qtd_cartas_restantes);
     }
 }
 
@@ -361,25 +376,24 @@ void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontua
 
 void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int numero_jogadores, int *qtd_pontos_time1, int *qtd_pontos_time2)
 {
-
     struct carta atual = jogar_carta(&time_1[0]);
     struct carta carta_maior = atual;
     int maior_time = 1;
-    int maior_posição = 0;
+    int maior_posicao = 0;
     for (int i = 0; i < qtd_jogadores_cada_time; i++)
     {
         if (cartas_iguais(comparar_cartas(carta_maior, atual), atual))
         {
             carta_maior = atual;
             maior_time = 1;
-            maior_posição = i;
+            maior_posicao = i;
         }
         atual = jogar_carta(&time_2[i]);
         if (cartas_iguais(comparar_cartas(carta_maior, atual), atual))
         {
             carta_maior = atual;
             maior_time = 2;
-            maior_posição = i;
+            maior_posicao = i;
         }
         if (i + 1 < qtd_jogadores_cada_time)
         {
@@ -388,14 +402,18 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
     }
     if (maior_time == 1)
     {
+        (*qtd_pontos_time1)++;
+        quem_ganhou_rodada(time_1, maior_posicao);
         printf("\n\n----------------------------------\n");
-        printf("   Maior Carta foi de %s: %d%c\n", time_1[maior_posição].nome, carta_maior.numero, carta_maior.naipe);
+        printf("   Maior Carta foi de %s: %d%c\n", time_1[maior_posicao].nome, carta_maior.numero, carta_maior.naipe);
         printf("----------------------------------\n");
     }
     if (maior_time == 2)
     {
+        (*qtd_pontos_time2)++;
+        quem_ganhou_rodada(time_2, maior_posicao);
         printf("\n\n----------------------------------\n");
-        printf("   Maior Carta foi de %s: %d%c\n", time_2[maior_posição].nome, carta_maior.numero, carta_maior.naipe);
+        printf("   Maior Carta foi de %s: %d%c\n", time_2[maior_posicao].nome, carta_maior.numero, carta_maior.naipe);
         printf("----------------------------------\n");
     }
 }
@@ -518,7 +536,7 @@ struct carta comparar_cartas(struct carta carta_maior, struct carta carta_jogada
     return carta_maior;
 }
 
-void quem_ganhou_rodada(struct jogador time[], int numero_jogadores_cada_time, int posicao_ganhador)
+void quem_ganhou_rodada(struct jogador time[], int posicao_ganhador)
 {
     struct jogador posicao_temporaria = time[posicao_ganhador];
     time[posicao_ganhador] = time[0];
