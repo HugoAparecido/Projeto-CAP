@@ -119,7 +119,7 @@ void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontua
  * @param qtd_pontos_time1 Ponteiro para a pontuação da Equipe 1.
  * @param qtd_pontos_time2 Ponteiro para a pontuação da Equipe 2.
  */
-void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida);
+void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira);
 
 /*
  * @brief Solicita a um jogador que escolha uma carta para jogar.
@@ -142,11 +142,11 @@ struct carta jogar_carta(struct jogador *jogador);
  */
 void pedir_truco(int *qtd_pontos_valendo);
 
-struct carta escolher_acao(struct jogador *jogador, int *valor_partida);
+struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira);
 
 void embaralhar(struct jogador time_1[], struct jogador time_2[], int numero_jogadores_cada_time, struct carta cartas_em_jogo[], int qtd_cartas, struct carta *vira);
 
-struct carta comparar_cartas(struct carta carta_maior, struct carta carta_jogada);
+char comparar_cartas(struct carta carta_maior, struct carta carta_jogada, struct carta vira);
 
 void quem_ganhou_rodada(struct jogador time[], int posicao_ganhador);
 
@@ -165,7 +165,6 @@ int main(void)
 {
     int pontuacao_time_1 = 0;
     int pontuacao_time_2 = 0;
-    int rodadas_jogadas = 0;
     int numero_jogadores;
     int qtd_jogadores_cada_time;
 
@@ -200,16 +199,14 @@ int main(void)
         int pontos_valendo = 1;
 
         embaralhar(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, cartas_em_jogo, qtd_carta, &vira);
-        printf("\n\n--------------------------------------\n");
-        printf("      Vira da rodada: %d%c\n", vira.numero, vira.naipe);
-        printf("--------------------------------------\n");
 
         int vitorias_time1 = 0;
         int vitorias_time2 = 0;
-        while (vitorias_time1 < 2 && vitorias_time2 < 2 && rodadas_jogadas < 3)
+        int rodadas_jogadas = 1;
+        while (vitorias_time1 < 2 && vitorias_time2 < 2 && rodadas_jogadas < 4)
         {
-            printf("-------------- Inicio da rodada interna %d-------------", rodadas_jogadas++);
-            rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &pontos_valendo);
+            printf("-------------- Inicio da rodada interna %d-------------\n", rodadas_jogadas++);
+            rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &pontos_valendo, &vira);
 
             exibir_pontuacao_final(vitorias_time1, vitorias_time2);
 
@@ -218,21 +215,6 @@ int main(void)
             else if (vitorias_time2 == 2)
                 pontuacao_time_2 += pontos_valendo;
 
-            /*int posicao_do_jogador = 0;
-            for (int i = 0; i < numero_jogadores; i++)
-            {
-                struct jogador *jogador_atual;
-                if (i % 2 == 0)
-                {
-                    jogador_atual = &time_1_jogadores[i / 2];
-                }
-                else
-                {
-                    jogador_atual = &time_2_jogadores[i / 2];
-                }
-
-            }*/
-            // posicao_do_jogador++;
         }
     }
 
@@ -260,7 +242,7 @@ void sorteio_numero_carta(struct carta *carta)
 
 void sorteio_naipe(struct carta *carta)
 {
-    carta->naipe = NAIPES[gerar_numero_aleatorio(3)];
+    carta->naipe = gerar_numero_aleatorio(3);
 }
 
 struct carta criar_carta_aleatoria(void)
@@ -301,7 +283,7 @@ void adicionar_equipe(struct jogador time[], int quantidade_jogadores)
 
 void exibir_carta(struct carta carta)
 {
-    printf("%d%c ", carta.numero, carta.naipe);
+    printf("%d%c ", carta.numero, NAIPES[carta.naipe]);
 }
 
 void exibir_mao(struct carta mao[], int qtd_cartas)
@@ -330,9 +312,10 @@ void exibir_ganhador(struct jogador time[], int quantidade_jogadores)
 
 void exibir_pontuacao_final(int pontuacao_time_1, int pontuacao_time_2)
 {
-    printf("\n--- Pontuação Final ---\n");
+    printf("\n------ Pontuação ------\n");
     printf("Time 1: %d pontos\n", pontuacao_time_1);
     printf("Time 2: %d pontos\n", pontuacao_time_2);
+    printf("------------------------\n\n");
 }
 
 void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontuacao_time_1, int pontuacao_time_2, int qtd_jagadores_cada_time)
@@ -345,47 +328,55 @@ void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontua
     exibir_pontuacao_final(pontuacao_time_1, pontuacao_time_2);
 }
 
-void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida)
+void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira)
 {
-    struct carta atual = escolher_acao(&time_1[0], valor_partida);
-    struct carta carta_maior = atual;
-    int maior_time = 1;
-    int maior_posicao = 0;
+    struct carta atual_1 = escolher_acao(&time_1[0], valor_partida, *vira);
+    struct carta atual_2 = escolher_acao(&time_2[0], valor_partida, *vira);
+    struct carta carta_maior_1 = atual_1;
+    struct carta carta_maior_2 = atual_2;
+    int maior_posicao_1 = 0;
+    int maior_posicao_2 = 0;
     for (int i = 0; i < qtd_jogadores_cada_time; i++)
     {
-        if (cartas_iguais(comparar_cartas(carta_maior, atual), atual))
+        if (comparar_cartas(atual_1,carta_maior_1, *vira) == '>')
         {
-            carta_maior = atual;
-            maior_time = 1;
-            maior_posicao = i;
+            carta_maior_1 = atual_1;
+            maior_posicao_1 = i;
         }
-        atual = escolher_acao(&time_2[i], valor_partida);
-        if (cartas_iguais(comparar_cartas(carta_maior, atual), atual))
+
+        if (comparar_cartas(atual_2,carta_maior_2, *vira) == '>')
         {
-            carta_maior = atual;
-            maior_time = 2;
-            maior_posicao = i;
+            carta_maior_2 = atual_2;
+            maior_posicao_2 = i;
         }
-        if (i + 1 < qtd_jogadores_cada_time)
+        if (i+1 < qtd_jogadores_cada_time)
         {
-            atual = escolher_acao(&time_1[i + 1], valor_partida);
+            atual_1 = escolher_acao(&time_1[i+1], valor_partida, *vira);
+            atual_2 = escolher_acao(&time_2[i+1], valor_partida, *vira);
         }
     }
-    if (maior_time == 1)
+    if(comparar_cartas(carta_maior_1,carta_maior_2, *vira) == '='){
+        (*qtd_pontos_time1)++;
+        (*qtd_pontos_time2)++;
+        printf("\n\n--------------------------------------------\n");
+        printf("   As cartas de %s: %d%c e de %s: %d%c empacharam\n", time_1[maior_posicao_1].nome, carta_maior_1.numero, NAIPES[carta_maior_1.naipe], time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
+        printf("--------------------------------------------\n");
+    }
+    else if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '>')
     {
         (*qtd_pontos_time1)++;
-        quem_ganhou_rodada(time_1, maior_posicao);
         printf("\n\n----------------------------------\n");
-        printf("   Maior Carta foi de %s: %d%c\n", time_1[maior_posicao].nome, carta_maior.numero, carta_maior.naipe);
+        printf("   Maior Carta foi de %s: %d%c\n", time_1[maior_posicao_1].nome, carta_maior_1.numero, NAIPES[carta_maior_1.naipe]);
         printf("----------------------------------\n");
+        quem_ganhou_rodada(time_1, maior_posicao_1);
     }
-    if (maior_time == 2)
+    else
     {
         (*qtd_pontos_time2)++;
-        quem_ganhou_rodada(time_2, maior_posicao);
         printf("\n\n----------------------------------\n");
-        printf("   Maior Carta foi de %s: %d%c\n", time_2[maior_posicao].nome, carta_maior.numero, carta_maior.naipe);
+        printf("   Maior Carta foi de %s: %d%c\n", time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
         printf("----------------------------------\n");
+        quem_ganhou_rodada(time_2, maior_posicao_2);
     }
 }
 
@@ -393,7 +384,7 @@ void pedir_carta_jogar(struct jogador jogador)
 {
     printf("Qual carta deseja jogar?: \n");
     for (int i = 0; i < jogador.qtd_cartas_restantes; i++)
-        printf("Para carta %d%c digite - %d\n", jogador.mao[i].numero, jogador.mao[i].naipe, i + 1);
+        printf("Para carta %d%c digite - %d\n", jogador.mao[i].numero, NAIPES[jogador.mao[i].naipe], i + 1);
 }
 
 void retirar_carta_jogada(struct jogador *jogador, int posicao_carta_jogada)
@@ -416,7 +407,6 @@ struct carta jogar_carta(struct jogador *jogador)
     int posicao_carta;
     do
     {
-        printf("----------Vez de %s----------\n", jogador->nome);
         pedir_carta_jogar(*jogador); // Exibe as opções
         scanf("%d", &posicao_carta);
         if (posicao_carta < 1 || posicao_carta > jogador->qtd_cartas_restantes)
@@ -441,13 +431,17 @@ void pedir_truco(int *qtd_pontos_valendo)
     scanf("%d", qtd_pontos_valendo);
 }
 
-struct carta escolher_acao(struct jogador *jogador, int *valor_partida)
+struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira)
 {
-    printf("Vez do jogador: %s\n", jogador->nome);
+    
     int opcao = 0;
     struct carta carta_jogada;
     while (opcao != 2)
     {
+        printf("\n\n--------------------------------------\n");
+        printf("      Vira da rodada: %d%c\n", vira.numero, NAIPES[vira.naipe]);
+        printf("--------------------------------------\n");
+        printf("----------Vez de %s----------\n", jogador->nome);
         printf("O que você deseja fazer:\n 1:Exibir suas cartas\n 2:Jogar alguma carta\n 3:Pedir truco\n");
         scanf("%d", &opcao);
         switch (opcao)
@@ -488,58 +482,51 @@ void embaralhar(struct jogador time_1[], struct jogador time_2[], int numero_jog
     *vira = cartas_em_jogo[j + 1] = troca_repetida(criar_carta_aleatoria(), cartas_em_jogo);
 }
 
-struct carta comparar_cartas(struct carta carta_maior, struct carta carta_jogada)
+char comparar_cartas(struct carta a, struct carta b, struct carta vira)
 {
-    if (carta_jogada.numero == 4 && carta_jogada.naipe == 'P')
+    struct carta manilha;
+    if(vira.numero == 10)
     {
-        return carta_jogada;
+        manilha.numero = 1;
     }
-    if (carta_maior.numero == 4 && carta_maior.naipe == 'P')
+    else
     {
-        return carta_maior;
-    }
-    if (carta_jogada.numero == 7 && carta_jogada.naipe == 'C')
-    {
-        return carta_jogada;
-    }
-    if (carta_maior.numero == 7 && carta_maior.naipe == 'C')
-    {
-        return carta_maior;
-    }
-    if (carta_jogada.numero == 1 && carta_jogada.naipe == 'E')
-    {
-        return carta_jogada;
-    }
-    if (carta_maior.numero == 1 && carta_maior.naipe == 'E')
-    {
-        return carta_maior;
-    }
-    if (carta_jogada.numero == 7 && carta_jogada.naipe == 'O')
-    {
-        return carta_jogada;
-    }
-    if (carta_maior.numero == 7 && carta_maior.naipe == 'O')
-    {
-        return carta_maior;
-    }
-    if (carta_jogada.numero == carta_maior.numero)
-    {
-        return carta_jogada.naipe > carta_maior.naipe ? carta_jogada : carta_maior;
-    }
-    if (carta_maior.numero == 3)
-    {
-        return carta_maior;
-    }
-    if (carta_maior.numero >= 1 && carta_maior.numero <= 2 && carta_jogada.numero >= 1 && carta_jogada.numero <= 2)
-    {
-        return carta_jogada.numero > carta_maior.numero ? carta_jogada : carta_maior;
-    }
-    if (carta_maior.numero > 3)
-    {
-        return carta_jogada.numero > carta_maior.numero ? carta_jogada : carta_maior;
+        manilha.numero = vira.numero + 1;
     }
 
-    return carta_maior;
+    char resultado;
+    if(a.numero == manilha.numero && b.numero == manilha.numero)
+    {
+        if(a.naipe > b.naipe)
+        {
+            resultado = '>';
+        }
+        else
+        {
+            resultado = '<';
+        }
+    }
+    else if(a.numero == manilha.numero)
+    {
+        resultado = '>';       
+    }
+    else if(b.numero == manilha.numero)
+    {
+        resultado = '<';
+    }
+    else if(a.numero > b.numero)
+    {
+        resultado = '>';
+    }
+    else if(b.numero > a.numero)
+    {
+        resultado = '<';
+    }
+    else
+    {
+        resultado = '=';
+    }
+    return resultado;
 }
 
 void quem_ganhou_rodada(struct jogador time[], int posicao_ganhador)
@@ -563,8 +550,7 @@ bool eh_repetida(struct carta nova_carta, struct carta cartas_em_jogo[])
     int i = 0;
     while (cartas_em_jogo[i].numero != -1)
     {
-        if (cartas_em_jogo[i].numero == nova_carta.numero &&
-            cartas_em_jogo[i].naipe == nova_carta.naipe)
+        if (cartas_iguais(nova_carta, cartas_em_jogo[i]))
         {
             return true;
         }
