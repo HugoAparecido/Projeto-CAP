@@ -195,6 +195,7 @@ int main(void)
     // Loop principal do jogo (atualmente comentado, pois a lógica central do jogo não está implementada)
     while (pontuacao_time_1 < 12 && pontuacao_time_2 < 12)
     {
+        exibir_pontuacao_final(pontuacao_time_1, pontuacao_time_2);
 
         int pontos_valendo = 1;
 
@@ -207,8 +208,10 @@ int main(void)
         int vitorias_time2 = 0;
         while (vitorias_time1 < 2 && vitorias_time2 < 2 && rodadas_jogadas < 3)
         {
-            printf("-------------- Inicio da rodada interna %d-------------", rodadas_jogadas + 1);
+            printf("-------------- Inicio da rodada interna %d-------------", rodadas_jogadas++);
             rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &pontos_valendo);
+
+            exibir_pontuacao_final(vitorias_time1, vitorias_time2);
 
             if (vitorias_time1 == 2)
                 pontuacao_time_1 += pontos_valendo;
@@ -230,11 +233,10 @@ int main(void)
 
             }*/
             // posicao_do_jogador++;
-            // Falta implementar o contador das vitorais do time 1 e 2 e somar no int para acabar o while
         }
     }
 
-    // finalizar_jogo(time_1_jogadores, time_2_jogadores, pontuacao_time_1, pontuacao_time_2, qtd_jogadores_cada_time);
+    finalizar_jogo(time_1_jogadores, time_2_jogadores, pontuacao_time_1, pontuacao_time_2, qtd_jogadores_cada_time);
 
     printf("\n--- Fim do jogo ---\n");
 
@@ -441,7 +443,7 @@ void pedir_truco(int *qtd_pontos_valendo)
 
 struct carta escolher_acao(struct jogador *jogador, int *valor_partida)
 {
-    printf("Vez do jogador: %s\n", *jogador->nome);
+    printf("Vez do jogador: %s\n", jogador->nome);
     int opcao = 0;
     struct carta carta_jogada;
     while (opcao != 2)
