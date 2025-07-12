@@ -5,6 +5,10 @@
 #include <time.h>
 #include <stdbool.h>
 
+#define NINGUEM_PEDIU_TRUCO -1
+#define TIME_INICIANTE_PARTIDA 1
+#define TIME_ADVERSARIO 2
+
 static int gerador_semeado = 0;
 const char NAIPES[] = {'O', 'E', 'C', 'P'};
 
@@ -278,7 +282,7 @@ int main(void)
         int vitorias_time2 = 0;
         int rodadas_jogadas = 1;
         bool aceitou_truco = false;
-        int time_que_pediu_truco = -1;
+        int time_que_pediu_truco = NINGUEM_PEDIU_TRUCO;
         while (vitorias_time1 < 2 && vitorias_time2 < 2 && rodadas_jogadas < 4)
         {
             printf("-------------- Inicio da rodada interna %d-------------\n", rodadas_jogadas++);
@@ -405,10 +409,10 @@ void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontua
 
 void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco)
 {
-    struct carta atual_1 = escolher_acao(&time_1[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 1, time_2[0]);
+    struct carta atual_1 = escolher_acao(&time_1[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_INICIANTE_PARTIDA, time_2[0]);
     struct carta atual_2;
-    if (*time_que_pediu_truco == -1)
-        atual_2 = escolher_acao(&time_2[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 2, qtd_jogadores_cada_time > 1 ? time_1[1] : time_1[0]);
+    if (*time_que_pediu_truco == NINGUEM_PEDIU_TRUCO)
+        atual_2 = escolher_acao(&time_2[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, qtd_jogadores_cada_time > 1 ? time_1[1] : time_1[0]);
     struct carta carta_maior_1 = atual_1;
     struct carta carta_maior_2 = atual_2;
     int maior_posicao_1 = 0;
@@ -430,8 +434,8 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
             }
             if (i + 1 < qtd_jogadores_cada_time)
             {
-                atual_1 = escolher_acao(&time_1[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 1, time_2[i + 1]);
-                atual_2 = escolher_acao(&time_2[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 2, qtd_jogadores_cada_time > i + 2 ? time_1[i + 2] : time_1[0]);
+                atual_1 = escolher_acao(&time_1[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_INICIANTE_PARTIDA, time_2[i + 1]);
+                atual_2 = escolher_acao(&time_2[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, qtd_jogadores_cada_time > i + 2 ? time_1[i + 2] : time_1[0]);
             }
         }
         else
