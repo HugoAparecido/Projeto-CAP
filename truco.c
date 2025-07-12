@@ -57,6 +57,8 @@ void adicionar_nome_jogador(struct jogador *jogador);
 /*
  * @brief Distribui 3 cartas aleatórias para a mão de um jogador.
  * @param jogador Um ponteiro para a estrutura 'jogador'.
+ * @param cartas_em_jogo Um array das cartas já distribuídas ou em uso no jogo, para evitar repetições.
+ * @param j Um ponteiro para o índice da próxima carta disponível em 'cartas_em_jogo'.
  */
 void distribuir_cartas_jogador(struct jogador *jogador, struct carta cartas_em_jogo[], int *j);
 
@@ -112,12 +114,16 @@ void exibir_pontuacao_final(int pontuacao_time_1, int pontuacao_time_2);
 void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontuacao_time_1, int pontuacao_time_2, int qtd_jagadores_cada_time);
 
 /*
- * @brief Placeholder para a lógica da rodada de Truco.
+ * @brief Lógica principal de uma rodada de Truco.
  * @param time_1 Array de 'jogador' para a Equipe 1.
  * @param time_2 Array de 'jogador' para a Equipe 2.
  * @param qtd_jogadores_cada_time Número de jogadores por equipe.
  * @param qtd_pontos_time1 Ponteiro para a pontuação da Equipe 1.
  * @param qtd_pontos_time2 Ponteiro para a pontuação da Equipe 2.
+ * @param valor_partida Ponteiro para o valor atual dos pontos em jogo na rodada.
+ * @param vira Ponteiro para a carta "vira" da rodada.
+ * @param aceitou_truco Ponteiro para um booleano que indica se o truco foi aceito.
+ * @param time_que_pediu_truco Ponteiro para o identificador do time que pediu truco (1 ou 2).
  */
 void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco);
 
@@ -127,6 +133,11 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
  */
 void pedir_carta_jogar(struct jogador jogador);
 
+/*
+ * @brief Retira uma carta da mão do jogador após ela ter sido jogada.
+ * @param jogador Um ponteiro para a estrutura 'jogador'.
+ * @param posicao_carta_jogada A posição (índice) da carta jogada na mão do jogador.
+ */
 void retirar_carta_jogada(struct jogador *jogador, int posicao_carta_jogada);
 
 /*
@@ -137,25 +148,85 @@ void retirar_carta_jogada(struct jogador *jogador, int posicao_carta_jogada);
 struct carta jogar_carta(struct jogador *jogador);
 
 /*
- * @brief Placeholder para a lógica do pedido de 'truco'.
+ * @brief Lógica para o pedido de 'truco', atualizando o valor da rodada.
  * @param qtd_pontos_valendo Ponteiro para o valor atual dos pontos da rodada.
  */
 void pedir_truco(int *qtd_pontos_valendo);
 
+/*
+ * @brief Lógica para aceitar um pedido de truco.
+ * @param aceitou_truco Ponteiro para um booleano que indica se o truco foi aceito.
+ */
+void aceitar_truco(bool *aceitou_truco);
+
+/*
+ * @brief Permite que um jogador escolha entre jogar uma carta ou pedir truco.
+ * @param jogador Um ponteiro para a estrutura 'jogador' do jogador atual.
+ * @param valor_partida Ponteiro para o valor atual dos pontos em jogo na rodada.
+ * @param vira A carta "vira" da rodada.
+ * @param aceitou_truco Ponteiro para um booleano que indica se o truco foi aceito.
+ * @param time_que_pediu_truco Ponteiro para o identificador do time que pediu truco (1 ou 2).
+ * @param time_atual O identificador do time do jogador atual (1 ou 2).
+ * @return A carta jogada pelo jogador, se ele escolher jogar.
+ */
 struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira, bool *aceitou_truco, int *time_que_pediu_truco, int time_atual);
 
+/*
+ * @brief Embaralha e distribui as cartas para os jogadores e define a carta "vira".
+ * @param time_1 Array de 'jogador' para a Equipe 1.
+ * @param time_2 Array de 'jogador' para a Equipe 2.
+ * @param numero_jogadores_cada_time O número de jogadores em cada equipe.
+ * @param cartas_em_jogo Um array para armazenar as cartas que estão em uso no jogo.
+ * @param qtd_cartas O número total de cartas no baralho que será usado.
+ * @param vira Ponteiro para a carta "vira" da rodada.
+ */
 void embaralhar(struct jogador time_1[], struct jogador time_2[], int numero_jogadores_cada_time, struct carta cartas_em_jogo[], int qtd_cartas, struct carta *vira);
 
+/*
+ * @brief Compara o valor de duas cartas para determinar qual é a maior, considerando a carta "vira".
+ * @param carta_maior A carta atualmente considerada a maior.
+ * @param carta_jogada A carta que está sendo comparada.
+ * @param vira A carta "vira" da rodada.
+ * @return Um caractere indicando o resultado da comparação ('M' se carta_jogada for maior, 'm' se carta_maior for maior, 'E' se forem iguais).
+ */
 char comparar_cartas(struct carta carta_maior, struct carta carta_jogada, struct carta vira);
 
+/*
+ * @brief Define qual jogador (e seu time) ganhou a rodada.
+ * @param time Um array de estruturas 'jogador' representando o time do ganhador.
+ * @param posicao_ganhador O índice do jogador que ganhou a rodada dentro do array 'time'.
+ */
 void quem_ganhou_rodada(struct jogador time[], int posicao_ganhador);
 
+/*
+ * @brief Gera uma nova carta aleatória e a retorna se ela já não estiver presente no array de cartas em jogo.
+ * @param nova_carta A carta que se deseja verificar e potencialmente substituir.
+ * @param cartas_em_jogo Um array das cartas já distribuídas ou em uso no jogo.
+ * @return Uma nova estrutura 'carta' que não é repetida.
+ */
 struct carta troca_repetida(struct carta nova_carta, struct carta cartas_em_jogo[]);
 
+/*
+ * @brief Verifica se uma dada carta já existe no array de cartas em jogo.
+ * @param nova_carta A carta a ser verificada.
+ * @param cartas_em_jogo Um array das cartas já distribuídas ou em uso no jogo.
+ * @return Verdadeiro se a carta for repetida, Falso caso contrário.
+ */
 bool eh_repetida(struct carta nova_carta, struct carta cartas_em_jogo[]);
 
+/*
+ * @brief Zera (limpa) um array de cartas, geralmente usado para reiniciar as cartas em jogo.
+ * @param cartas Um ponteiro para o início do array de estruturas 'carta'.
+ * @param qtd O número de cartas no array a serem zeradas.
+ */
 void zerar_cartas_em_jogo(struct carta *cartas, int qtd);
 
+/*
+ * @brief Compara duas estruturas 'carta' para verificar se são idênticas (mesmo número e naipe).
+ * @param a A primeira estrutura 'carta' para comparação.
+ * @param b A segunda estrutura 'carta' para comparação.
+ * @return Verdadeiro se as cartas forem iguais, Falso caso contrário.
+ */
 bool cartas_iguais(struct carta a, struct carta b);
 
 /*
@@ -360,7 +431,7 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
         }
         else
         {
-            if (time_que_pediu_truco == 1)
+            if (*time_que_pediu_truco == 1)
                 (*qtd_pontos_time1) = 2;
             else
                 (*qtd_pontos_time2) = 2;
@@ -451,6 +522,20 @@ void pedir_truco(int *qtd_pontos_valendo)
     }
 }
 
+void aceitar_truco(bool *aceitou_truco)
+{
+    printf("Deseja aceitar o truco? (S ou N):\n");
+    char resposta = 'A';
+    scanf("%c", &resposta);
+    while (resposta != 'S' && resposta != 'N' && resposta != 's' && resposta != 'n')
+    {
+        printf("Valor indesejado, digite novamente!!\n");
+        printf("Deseja aceitar o truco? (S ou N):\n");
+        scanf("%c", &resposta);
+    }
+    *aceitou_truco = resposta == 'S' || resposta == 's' ? true : false;
+}
+
 struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira, bool *aceitou_truco, int *time_que_pediu_truco, int time_atual)
 {
     int opcao = 0;
@@ -463,16 +548,7 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
         printf("----------Vez de %s----------\n", jogador->nome);
         if (*valor_partida != 1 && !*aceitou_truco)
         {
-            printf("Deseja aceitar o truco? (S ou N):\n");
-            char resposta = 'A';
-            scanf("%c", &resposta);
-            while (resposta != 'S' && resposta != 'N' && resposta != 's' && resposta != 'n')
-            {
-                printf("Valor indesejado, digite novamente!!\n");
-                printf("Deseja aceitar o truco? (S ou N):\n");
-                scanf("%c", &resposta);
-            }
-            *aceitou_truco = resposta == 'S' || resposta == 's' ? true : false;
+            aceitar_truco(aceitou_truco);
         }
         else
         {
