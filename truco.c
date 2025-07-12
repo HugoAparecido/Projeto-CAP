@@ -119,7 +119,7 @@ void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontua
  * @param qtd_pontos_time1 Ponteiro para a pontuação da Equipe 1.
  * @param qtd_pontos_time2 Ponteiro para a pontuação da Equipe 2.
  */
-void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira);
+void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco);
 
 /*
  * @brief Solicita a um jogador que escolha uma carta para jogar.
@@ -142,7 +142,7 @@ struct carta jogar_carta(struct jogador *jogador);
  */
 void pedir_truco(int *qtd_pontos_valendo);
 
-struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira);
+struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira, bool *aceitou_truco, int *time_que_pediu_truco, int time_atual);
 
 void embaralhar(struct jogador time_1[], struct jogador time_2[], int numero_jogadores_cada_time, struct carta cartas_em_jogo[], int qtd_cartas, struct carta *vira);
 
@@ -203,10 +203,12 @@ int main(void)
         int vitorias_time1 = 0;
         int vitorias_time2 = 0;
         int rodadas_jogadas = 1;
+        bool aceitou_truco = false;
+        int time_que_pediu_truco = -1;
         while (vitorias_time1 < 2 && vitorias_time2 < 2 && rodadas_jogadas < 4)
         {
             printf("-------------- Inicio da rodada interna %d-------------\n", rodadas_jogadas++);
-            rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &pontos_valendo, &vira);
+            rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &pontos_valendo, &vira, &aceitou_truco, &time_que_pediu_truco);
 
             exibir_pontuacao_final(vitorias_time1, vitorias_time2);
 
@@ -214,7 +216,6 @@ int main(void)
                 pontuacao_time_1 += pontos_valendo;
             else if (vitorias_time2 == 2)
                 pontuacao_time_2 += pontos_valendo;
-
         }
     }
 
@@ -328,55 +329,69 @@ void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontua
     exibir_pontuacao_final(pontuacao_time_1, pontuacao_time_2);
 }
 
-void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira)
+void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco)
 {
-    struct carta atual_1 = escolher_acao(&time_1[0], valor_partida, *vira);
-    struct carta atual_2 = escolher_acao(&time_2[0], valor_partida, *vira);
+    struct carta atual_1 = escolher_acao(&time_1[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 1);
+    struct carta atual_2 = escolher_acao(&time_2[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 2);
     struct carta carta_maior_1 = atual_1;
     struct carta carta_maior_2 = atual_2;
     int maior_posicao_1 = 0;
     int maior_posicao_2 = 0;
     for (int i = 0; i < qtd_jogadores_cada_time; i++)
     {
-        if (comparar_cartas(atual_1,carta_maior_1, *vira) == '>')
+        if (*valor_partida == 1 || aceitou_truco)
         {
-            carta_maior_1 = atual_1;
-            maior_posicao_1 = i;
-        }
+            if (comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
+            {
+                carta_maior_1 = atual_1;
+                maior_posicao_1 = i;
+            }
 
-        if (comparar_cartas(atual_2,carta_maior_2, *vira) == '>')
-        {
-            carta_maior_2 = atual_2;
-            maior_posicao_2 = i;
+            if (comparar_cartas(atual_2, carta_maior_2, *vira) == '>')
+            {
+                carta_maior_2 = atual_2;
+                maior_posicao_2 = i;
+            }
+            if (i + 1 < qtd_jogadores_cada_time)
+            {
+                atual_1 = escolher_acao(&time_1[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 1);
+                atual_2 = escolher_acao(&time_2[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 2);
+            }
         }
-        if (i+1 < qtd_jogadores_cada_time)
+        else
         {
-            atual_1 = escolher_acao(&time_1[i+1], valor_partida, *vira);
-            atual_2 = escolher_acao(&time_2[i+1], valor_partida, *vira);
+            if (time_que_pediu_truco == 1)
+                (*qtd_pontos_time1) = 2;
+            else
+                (*qtd_pontos_time2) = 2;
         }
     }
-    if(comparar_cartas(carta_maior_1,carta_maior_2, *vira) == '='){
-        (*qtd_pontos_time1)++;
-        (*qtd_pontos_time2)++;
-        printf("\n\n--------------------------------------------\n");
-        printf("   As cartas de %s: %d%c e de %s: %d%c empacharam\n", time_1[maior_posicao_1].nome, carta_maior_1.numero, NAIPES[carta_maior_1.naipe], time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
-        printf("--------------------------------------------\n");
-    }
-    else if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '>')
+    if (*valor_partida == 1 || aceitou_truco)
     {
-        (*qtd_pontos_time1)++;
-        printf("\n\n----------------------------------\n");
-        printf("   Maior Carta foi de %s: %d%c\n", time_1[maior_posicao_1].nome, carta_maior_1.numero, NAIPES[carta_maior_1.naipe]);
-        printf("----------------------------------\n");
-        quem_ganhou_rodada(time_1, maior_posicao_1);
-    }
-    else
-    {
-        (*qtd_pontos_time2)++;
-        printf("\n\n----------------------------------\n");
-        printf("   Maior Carta foi de %s: %d%c\n", time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
-        printf("----------------------------------\n");
-        quem_ganhou_rodada(time_2, maior_posicao_2);
+        if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '=')
+        {
+            (*qtd_pontos_time1)++;
+            (*qtd_pontos_time2)++;
+            printf("\n\n--------------------------------------------\n");
+            printf("   As cartas de %s: %d%c e de %s: %d%c empacharam\n", time_1[maior_posicao_1].nome, carta_maior_1.numero, NAIPES[carta_maior_1.naipe], time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
+            printf("--------------------------------------------\n");
+        }
+        else if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '>')
+        {
+            (*qtd_pontos_time1)++;
+            printf("\n\n----------------------------------\n");
+            printf("   Maior Carta foi de %s: %d%c\n", time_1[maior_posicao_1].nome, carta_maior_1.numero, NAIPES[carta_maior_1.naipe]);
+            printf("----------------------------------\n");
+            quem_ganhou_rodada(time_1, maior_posicao_1);
+        }
+        else
+        {
+            (*qtd_pontos_time2)++;
+            printf("\n\n----------------------------------\n");
+            printf("   Maior Carta foi de %s: %d%c\n", time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
+            printf("----------------------------------\n");
+            quem_ganhou_rodada(time_2, maior_posicao_2);
+        }
     }
 }
 
@@ -427,13 +442,17 @@ struct carta jogar_carta(struct jogador *jogador)
 
 void pedir_truco(int *qtd_pontos_valendo)
 {
-    printf("Quanto deseja pedir: 3, 6, 9?");
+    printf("Quanto deseja pedir: 3, 6, 9 ou 12?\n");
     scanf("%d", qtd_pontos_valendo);
+    while (*qtd_pontos_valendo != 3 && *qtd_pontos_valendo != 6 && *qtd_pontos_valendo != 9 && *qtd_pontos_valendo != 12)
+    {
+        printf("Você inseriu um valor inválido, os valores válidos são 3, 6, 9 ou 12\n");
+        scanf("%d", qtd_pontos_valendo);
+    }
 }
 
-struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira)
+struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira, bool *aceitou_truco, int *time_que_pediu_truco, int time_atual)
 {
-    
     int opcao = 0;
     struct carta carta_jogada;
     while (opcao != 2)
@@ -442,29 +461,46 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
         printf("      Vira da rodada: %d%c\n", vira.numero, NAIPES[vira.naipe]);
         printf("--------------------------------------\n");
         printf("----------Vez de %s----------\n", jogador->nome);
-        printf("O que você deseja fazer:\n 1:Exibir suas cartas\n 2:Jogar alguma carta\n 3:Pedir truco\n");
-        scanf("%d", &opcao);
-        switch (opcao)
+        if (*valor_partida != 1 && !*aceitou_truco)
         {
-        case 1:
-        {
-            exibir_mao(jogador->mao, jogador->qtd_cartas_restantes);
-            break;
+            printf("Deseja aceitar o truco? (S ou N):\n");
+            char resposta = 'A';
+            scanf("%c", &resposta);
+            while (resposta != 'S' && resposta != 'N' && resposta != 's' && resposta != 'n')
+            {
+                printf("Valor indesejado, digite novamente!!\n");
+                printf("Deseja aceitar o truco? (S ou N):\n");
+                scanf("%c", &resposta);
+            }
+            *aceitou_truco = resposta == 'S' || resposta == 's' ? true : false;
         }
-        case 2:
+        else
         {
-            carta_jogada = jogar_carta(jogador);
-            printf("%s jogou: ", jogador->nome);
-            exibir_carta(carta_jogada);
-            printf("\n");
-            break;
-        }
-        case 3:
-            pedir_truco(valor_partida);
-            printf("Agora a rodada vale %d pontos!\n", *valor_partida);
-            break;
-        default:
-            printf("Opção inválida!!!");
+            printf("O que você deseja fazer:\n 1:Exibir suas cartas\n 2:Jogar alguma carta\n 3:Pedir truco\n");
+            scanf("%d", &opcao);
+            switch (opcao)
+            {
+            case 1:
+            {
+                exibir_mao(jogador->mao, jogador->qtd_cartas_restantes);
+                break;
+            }
+            case 2:
+            {
+                carta_jogada = jogar_carta(jogador);
+                printf("%s jogou: ", jogador->nome);
+                exibir_carta(carta_jogada);
+                printf("\n");
+                break;
+            }
+            case 3:
+                pedir_truco(valor_partida);
+                *time_que_pediu_truco = time_atual;
+                printf("Agora a rodada vale %d pontos!\n", *valor_partida);
+                break;
+            default:
+                printf("Opção inválida!!!");
+            }
         }
     }
     return carta_jogada;
@@ -485,7 +521,7 @@ void embaralhar(struct jogador time_1[], struct jogador time_2[], int numero_jog
 char comparar_cartas(struct carta a, struct carta b, struct carta vira)
 {
     struct carta manilha;
-    if(vira.numero == 10)
+    if (vira.numero == 10)
     {
         manilha.numero = 1;
     }
@@ -495,9 +531,9 @@ char comparar_cartas(struct carta a, struct carta b, struct carta vira)
     }
 
     char resultado;
-    if(a.numero == manilha.numero && b.numero == manilha.numero)
+    if (a.numero == manilha.numero && b.numero == manilha.numero)
     {
-        if(a.naipe > b.naipe)
+        if (a.naipe > b.naipe)
         {
             resultado = '>';
         }
@@ -506,19 +542,19 @@ char comparar_cartas(struct carta a, struct carta b, struct carta vira)
             resultado = '<';
         }
     }
-    else if(a.numero == manilha.numero)
-    {
-        resultado = '>';       
-    }
-    else if(b.numero == manilha.numero)
-    {
-        resultado = '<';
-    }
-    else if(a.numero > b.numero)
+    else if (a.numero == manilha.numero)
     {
         resultado = '>';
     }
-    else if(b.numero > a.numero)
+    else if (b.numero == manilha.numero)
+    {
+        resultado = '<';
+    }
+    else if (a.numero > b.numero)
+    {
+        resultado = '>';
+    }
+    else if (b.numero > a.numero)
     {
         resultado = '<';
     }
