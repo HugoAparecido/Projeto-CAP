@@ -411,7 +411,9 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
 {
     struct carta atual_1 = escolher_acao(&time_1[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_INICIANTE_PARTIDA, time_2[0]);
     struct carta atual_2;
-    if (*time_que_pediu_truco == NINGUEM_PEDIU_TRUCO)
+    printf("%s\n", *aceitou_truco ? "Sim" : "Não");
+
+    if (*time_que_pediu_truco == NINGUEM_PEDIU_TRUCO || (*time_que_pediu_truco == TIME_INICIANTE_PARTIDA && *aceitou_truco))
         atual_2 = escolher_acao(&time_2[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, qtd_jogadores_cada_time > 1 ? time_1[1] : time_1[0]);
     struct carta carta_maior_1 = atual_1;
     struct carta carta_maior_2 = atual_2;
@@ -448,9 +450,9 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
     }
     printf("%s\n", *aceitou_truco ? "Sim" : "Não");
 
-    if (*time_que_pediu_truco == 1)
+    if (*time_que_pediu_truco == 1 && !(*aceitou_truco))
         *qtd_pontos_time1 = 2;
-    else
+    if (*time_que_pediu_truco == 2 && !(*aceitou_truco))
         *qtd_pontos_time2 = 2;
 
     if (*valor_partida == 1 || *aceitou_truco)
@@ -549,7 +551,7 @@ void aceitar_truco(bool *aceitou_truco, struct jogador jogador_que_responde)
         printf("Deseja aceitar o truco? (S ou N):\n");
         scanf("%c", &resposta);
     }
-    *aceitou_truco = (resposta == 'S' || resposta == 's') ? true : false;
+    *aceitou_truco = (resposta == 'S' || resposta == 's');
 }
 
 void aumentar_truco(int *valor_partida)
@@ -573,8 +575,7 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
         if (*valor_partida != 1 && !(*aceitou_truco))
         {
             aceitar_truco(aceitou_truco, proximo_jogador);
-            if (!(*aceitou_truco))
-                opcao = 2;
+            opcao = 2;
             carta_jogada = jogar_carta(jogador);
         }
         else
