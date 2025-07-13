@@ -550,9 +550,9 @@ void pedir_truco(int *qtd_pontos_valendo)
 
 void aceitar_truco(bool *aceitou_truco, struct jogador jogador_que_responde)
 {
-    printf("Deseja aceitar o truco %s? (S ou N):", jogador_que_responde.nome);
+    printf("Deseja aceitar o truco %s? (S ou N):\n", jogador_que_responde.nome);
     char resposta = 'A';
-    scanf("%c", &resposta);
+    scanf(" %c", &resposta);
     while (resposta != 'S' && resposta != 'N' && resposta != 's' && resposta != 'n')
     {
         printf("Valor indesejado, digite novamente!!\n");
