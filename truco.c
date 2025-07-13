@@ -399,7 +399,8 @@ void exibir_pontuacao_final(int pontuacao_time_1, int pontuacao_time_2)
     printf("------------------------\n\n");
 }
 
-void exibir_pontuacao_partida(int pontuacao_time_1, int pontuacao_time_2){
+void exibir_pontuacao_partida(int pontuacao_time_1, int pontuacao_time_2)
+{
     printf("\n------ Pontuação da Partida ------\n");
     printf("Time 1: %d pontos\n", pontuacao_time_1);
     printf("Time 2: %d pontos\n", pontuacao_time_2);
@@ -429,7 +430,7 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
     int maior_posicao_2 = 0;
     for (int i = 0; i < qtd_jogadores_cada_time; i++)
     {
-        if (*valor_partida == 1 || *aceitou_truco)
+        if (*aceitou_truco || (!(*aceitou_truco) && valor_partida == 1 && time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
         {
             if (comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
             {
@@ -445,7 +446,8 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
             if (i + 1 < qtd_jogadores_cada_time)
             {
                 atual_1 = escolher_acao(&time_1[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_INICIANTE_PARTIDA, time_2[i + 1]);
-                atual_2 = escolher_acao(&time_2[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, qtd_jogadores_cada_time > i + 2 ? time_1[i + 2] : time_1[0]);
+                if (*time_que_pediu_truco == NINGUEM_PEDIU_TRUCO || (*time_que_pediu_truco == TIME_INICIANTE_PARTIDA && *aceitou_truco))
+                    atual_2 = escolher_acao(&time_2[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, qtd_jogadores_cada_time > i + 2 ? time_1[i + 2] : time_1[0]);
             }
         }
         else
@@ -463,7 +465,7 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
     if (*time_que_pediu_truco == 2 && !(*aceitou_truco))
         *qtd_pontos_time2 = 2;
 
-    if (*aceitou_truco)
+    if (*aceitou_truco || (!(*aceitou_truco) && valor_partida == 1 && time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
     {
         if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '=')
         {
