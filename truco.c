@@ -107,6 +107,8 @@ void exibir_ganhador(struct jogador time[], int quantidade_jogadores);
  */
 void exibir_pontuacao_final(int pontuacao_time_1, int pontuacao_time_2);
 
+void exibir_pontuacao_partida(int pontuacao_time_1, int pontuacao_time_2);
+
 /*
  * @brief Gerencia a conclusão do jogo, anunciando o vencedor e as pontuações finais.
  * @param time_1 Array de 'jogador' para a Equipe 1.
@@ -288,7 +290,7 @@ int main(void)
             printf("-------------- Inicio da rodada interna %d-------------\n", rodadas_jogadas++);
             rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &pontos_valendo, &vira, &aceitou_truco, &time_que_pediu_truco);
 
-            exibir_pontuacao_final(vitorias_time1, vitorias_time2);
+            exibir_pontuacao_partida(vitorias_time1, vitorias_time2);
 
             if (vitorias_time1 == 2)
                 pontuacao_time_1 += pontos_valendo;
@@ -391,7 +393,14 @@ void exibir_ganhador(struct jogador time[], int quantidade_jogadores)
 
 void exibir_pontuacao_final(int pontuacao_time_1, int pontuacao_time_2)
 {
-    printf("\n------ Pontuação ------\n");
+    printf("\n------ Pontuação Global ------\n");
+    printf("Time 1: %d pontos\n", pontuacao_time_1);
+    printf("Time 2: %d pontos\n", pontuacao_time_2);
+    printf("------------------------\n\n");
+}
+
+void exibir_pontuacao_partida(int pontuacao_time_1, int pontuacao_time_2){
+    printf("\n------ Pontuação da Partida ------\n");
     printf("Time 1: %d pontos\n", pontuacao_time_1);
     printf("Time 2: %d pontos\n", pontuacao_time_2);
     printf("------------------------\n\n");
@@ -411,7 +420,6 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
 {
     struct carta atual_1 = escolher_acao(&time_1[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_INICIANTE_PARTIDA, time_2[0]);
     struct carta atual_2;
-    printf("%s\n", *aceitou_truco ? "Sim" : "Não");
 
     if (*time_que_pediu_truco == NINGUEM_PEDIU_TRUCO || (*time_que_pediu_truco == TIME_INICIANTE_PARTIDA && *aceitou_truco))
         atual_2 = escolher_acao(&time_2[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, qtd_jogadores_cada_time > 1 ? time_1[1] : time_1[0]);
@@ -448,14 +456,14 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
                 *qtd_pontos_time2 = 2;
         }
     }
-    printf("%s\n", *aceitou_truco ? "Sim" : "Não");
+    // printf("%s\n", *aceitou_truco ? "Sim" : "Não");
 
     if (*time_que_pediu_truco == 1 && !(*aceitou_truco))
         *qtd_pontos_time1 = 2;
     if (*time_que_pediu_truco == 2 && !(*aceitou_truco))
         *qtd_pontos_time2 = 2;
 
-    if (*valor_partida == 1 || *aceitou_truco)
+    if (*aceitou_truco)
     {
         if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '=')
         {
@@ -575,6 +583,7 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
         if (*valor_partida != 1 && !(*aceitou_truco))
         {
             aceitar_truco(aceitou_truco, proximo_jogador);
+            *valor_partida = !(*aceitou_truco) ? 1 : (*valor_partida);
             opcao = 2;
             carta_jogada = jogar_carta(jogador);
         }
