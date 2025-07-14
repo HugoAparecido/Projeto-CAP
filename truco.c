@@ -11,6 +11,7 @@
 
 static int gerador_semeado = 0;
 const char NAIPES[] = {'O', 'E', 'C', 'P'};
+const char SIMBOLOS[] = {'0', '4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'};
 
 struct carta
 {
@@ -364,7 +365,7 @@ void adicionar_equipe(struct jogador time[], int quantidade_jogadores)
 
 void exibir_carta(struct carta carta)
 {
-    printf("%d%c ", carta.numero, NAIPES[carta.naipe]);
+    printf("%c%c ", SIMBOLOS[carta.numero], NAIPES[carta.naipe]);
 }
 
 void exibir_mao(struct carta mao[], int qtd_cartas)
@@ -471,14 +472,14 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
             (*qtd_pontos_time1)++;
             (*qtd_pontos_time2)++;
             printf("\n\n--------------------------------------------\n");
-            printf("   As cartas de %s: %d%c e de %s: %d%c empacharam\n", time_1[maior_posicao_1].nome, carta_maior_1.numero, NAIPES[carta_maior_1.naipe], time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
+            printf("   As cartas de %s: %c%c e de %s: %c%c empacharam\n", time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe], time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
             printf("--------------------------------------------\n");
         }
         else if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '>')
         {
             (*qtd_pontos_time1)++;
             printf("\n\n----------------------------------\n");
-            printf("   Maior Carta foi de %s: %d%c\n", time_1[maior_posicao_1].nome, carta_maior_1.numero, NAIPES[carta_maior_1.naipe]);
+            printf("   Maior Carta foi de %s: %c%c\n", time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe]);
             printf("----------------------------------\n");
             quem_ganhou_rodada(time_1, maior_posicao_1);
         }
@@ -486,7 +487,7 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
         {
             (*qtd_pontos_time2)++;
             printf("\n\n----------------------------------\n");
-            printf("   Maior Carta foi de %s: %d%c\n", time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
+            printf("   Maior Carta foi de %s: %c%c\n", time_2[maior_posicao_2].nome, SIMBOLOS[carta_maior_2.numero], NAIPES[carta_maior_2.naipe]);
             printf("----------------------------------\n");
             quem_ganhou_rodada(time_2, maior_posicao_2);
         }
@@ -497,7 +498,7 @@ void pedir_carta_jogar(struct jogador jogador)
 {
     printf("Qual carta deseja jogar?: \n");
     for (int i = 0; i < jogador.qtd_cartas_restantes; i++)
-        printf("Para carta %d%c digite - %d\n", jogador.mao[i].numero, NAIPES[jogador.mao[i].naipe], i + 1);
+        printf("Para carta %c%c digite - %c\n", SIMBOLOS[jogador.mao[i].numero], NAIPES[jogador.mao[i].naipe], i + 1);
 }
 
 void retirar_carta_jogada(struct jogador *jogador, int posicao_carta_jogada)
@@ -580,7 +581,7 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
     while (opcao != 2)
     {
         printf("\n\n--------------------------------------\n");
-        printf("      Vira da rodada: %d%c\n", vira.numero, NAIPES[vira.naipe]);
+        printf("      Vira da rodada: %c%c\n", SIMBOLOS[vira.numero], NAIPES[vira.naipe]);
         printf("--------------------------------------\n");
         printf("----------Vez de %s----------\n", jogador->nome);
         if (*valor_partida != 1 && !(*aceitou_truco))
