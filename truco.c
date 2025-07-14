@@ -458,12 +458,11 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
                 *qtd_pontos_time2 = 2;
         }
     }
-    // printf("%s\n", *aceitou_truco ? "Sim" : "Não");
 
     if (*time_que_pediu_truco == 1 && !(*aceitou_truco))
-        *qtd_pontos_time1 = 1;
+        *qtd_pontos_time1 = 2;
     if (*time_que_pediu_truco == 2 && !(*aceitou_truco))
-        *qtd_pontos_time2 = 1;
+        *qtd_pontos_time2 = 2;
 
     if (*aceitou_truco || (!(*aceitou_truco) && *valor_partida == 1 && *time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
     {
