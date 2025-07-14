@@ -551,7 +551,9 @@ void pedir_truco(int *qtd_pontos_valendo)
 
 void aceitar_truco(bool *aceitou_truco, struct jogador jogador_que_responde)
 {
-    printf("Deseja aceitar o truco %s? (S ou N):\n", jogador_que_responde.nome);
+    printf("\n\n--------------------------------------\n");
+    printf("----------Vez de %s----------\n", jogador_que_responde.nome);
+    printf("Deseja aceitar o truco? (S ou N):\n");
     char resposta = 'A';
     scanf(" %c", &resposta);
     while (resposta != 'S' && resposta != 'N' && resposta != 's' && resposta != 'n')
@@ -586,7 +588,6 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
             aceitar_truco(aceitou_truco, proximo_jogador);
             *valor_partida = !(*aceitou_truco) ? 1 : (*valor_partida);
             opcao = 2;
-            carta_jogada = jogar_carta(jogador);
         }
         else
         {
