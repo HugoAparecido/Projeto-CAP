@@ -430,7 +430,7 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
     int maior_posicao_2 = 0;
     for (int i = 0; i < qtd_jogadores_cada_time; i++)
     {
-        if (*aceitou_truco || (!(*aceitou_truco) && valor_partida == 1 && time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
+        if (*aceitou_truco || (!(*aceitou_truco) && *valor_partida == 1 && *time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
         {
             if (comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
             {
@@ -461,11 +461,11 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
     // printf("%s\n", *aceitou_truco ? "Sim" : "Não");
 
     if (*time_que_pediu_truco == 1 && !(*aceitou_truco))
-        *qtd_pontos_time1 = 2;
+        *qtd_pontos_time1 = 1;
     if (*time_que_pediu_truco == 2 && !(*aceitou_truco))
-        *qtd_pontos_time2 = 2;
+        *qtd_pontos_time2 = 1;
 
-    if (*aceitou_truco || (!(*aceitou_truco) && valor_partida == 1 && time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
+    if (*aceitou_truco || (!(*aceitou_truco) && *valor_partida == 1 && *time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
     {
         if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '=')
         {
