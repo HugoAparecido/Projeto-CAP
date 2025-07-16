@@ -588,6 +588,7 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
         {
             aceitar_truco(aceitou_truco, proximo_jogador);
             *valor_partida = !(*aceitou_truco) ? 1 : (*valor_partida);
+            if(!(*aceitou_truco))
             opcao = 2;
         }
         else
