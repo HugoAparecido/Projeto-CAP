@@ -5,25 +5,29 @@
 #include <time.h>
 #include <stdbool.h>
 
-#define NINGUEM_PEDIU_TRUCO -1
-#define TIME_INICIANTE_PARTIDA 1
-#define TIME_ADVERSARIO 2
+#define NINGUEM_PEDIU_TRUCO -1   // Indica que nenhum time pediu truco na rodada.
+#define TIME_INICIANTE_PARTIDA 1 // Identificador para o Time 1.
+#define TIME_ADVERSARIO 2        // Identificador para o Time 2.
 
-static int gerador_semeado = 0;
-const char NAIPES[] = {'O', 'E', 'C', 'P'};
-const char SIMBOLOS[] = {'0', '4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'};
+static int gerador_semeado = 0;                                                  // Flag para garantir que o gerador de números aleatórios seja semeado apenas uma vez.
+const char NAIPES[] = {'O', 'E', 'C', 'P'};                                      // Array de caracteres representando os naipes das cartas (Ouros, Espadas, Copas, Paus).
+const char SIMBOLOS[] = {'0', '4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'}; // Array de caracteres representando os símbolos das cartas (valores).
+
+// ---
 
 struct carta
 {
-    int numero;
-    int naipe;
+    int numero; // O valor numérico da carta, correspondendo ao índice em SIMBOLOS.
+    int naipe;  // O naipe da carta, correspondendo ao índice em NAIPES.
 };
+
+// ---
 
 struct jogador
 {
-    char nome[50];
-    struct carta mao[3];
-    int qtd_cartas_restantes;
+    char nome[50];            // Nome do jogador.
+    struct carta mao[3];      // As 3 cartas que o jogador possui na mão.
+    int qtd_cartas_restantes; // Quantidade de cartas que o jogador ainda possui na mão.
 };
 
 // Protótipos das Funções
@@ -100,7 +104,6 @@ void exibir_time(struct jogador time[], int quantidade_jogadores);
  * @param quantidade_jogadores O número de jogadores na equipe vencedora.
  */
 void exibir_ganhador(struct jogador time[], int quantidade_jogadores);
-
 /*
  * @brief Exibe as pontuações finais de ambas as equipes.
  * @param pontuacao_time_1 A pontuação final da Equipe 1.
@@ -108,6 +111,11 @@ void exibir_ganhador(struct jogador time[], int quantidade_jogadores);
  */
 void exibir_pontuacao_final(int pontuacao_time_1, int pontuacao_time_2);
 
+/*
+ * @brief Exibe as pontuações atuais de ambas as equipes durante a partida.
+ * @param pontuacao_time_1 A pontuação atual da Equipe 1.
+ * @param pontuacao_time_2 A pontuacao atual da Equipe 2.
+ */
 void exibir_pontuacao_partida(int pontuacao_time_1, int pontuacao_time_2);
 
 /*
@@ -174,12 +182,16 @@ void aceitar_truco(bool *aceitou_truco, struct jogador jogador_que_responde);
  * @param aceitou_truco Ponteiro para um booleano que indica se o truco foi aceito.
  * @param time_que_pediu_truco Ponteiro para o identificador do time que pediu truco (1 ou 2).
  * @param time_atual O identificador do time do jogador atual (1 ou 2).
+ * @param proximo_jogador A estrutura 'jogador' do próximo jogador a jogar, utilizada para algumas lógicas de decisão.
  * @return A carta jogada pelo jogador, se ele escolher jogar.
  */
-
-void aumentar_truco(int *valor_partida);
-
 struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira, bool *aceitou_truco, int *time_que_pediu_truco, int time_atual, struct jogador proximo_jogador);
+
+/*
+ * @brief Aumenta o valor da aposta do truco na partida.
+ * @param valor_partida Ponteiro para o valor atual dos pontos em jogo na rodada, que será incrementado.
+ */
+void aumentar_truco(int *valor_partida);
 
 /*
  * @brief Embaralha e distribui as cartas para os jogadores e define a carta "vira".
@@ -498,7 +510,7 @@ void pedir_carta_jogar(struct jogador jogador)
 {
     printf("Qual carta deseja jogar?: \n");
     for (int i = 0; i < jogador.qtd_cartas_restantes; i++)
-        printf("Para carta %c%c digite - %c\n", SIMBOLOS[jogador.mao[i].numero], NAIPES[jogador.mao[i].naipe], i + 1);
+        printf("Para carta %c%c digite - %d\n", SIMBOLOS[jogador.mao[i].numero], NAIPES[jogador.mao[i].naipe], i + 1);
 }
 
 void retirar_carta_jogada(struct jogador *jogador, int posicao_carta_jogada)
@@ -588,15 +600,15 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
         {
             aceitar_truco(aceitou_truco, proximo_jogador);
             *valor_partida = !(*aceitou_truco) ? 1 : (*valor_partida);
-            if(!(*aceitou_truco))
-            opcao = 2;
+            if (!(*aceitou_truco))
+                opcao = 2;
         }
         else
         {
             printf("O que você deseja fazer:\n 1:Exibir suas cartas\n 2:Jogar alguma carta\n ");
-            if (*aceitou_truco)
+            if (*aceitou_truco && proximo_jogador.qtd_cartas_restantes > 0)
                 printf("3:Aumentar valor do truco\n");
-            else
+            else if (proximo_jogador.qtd_cartas_restantes > 0)
                 printf("3:Pedir truco\n");
             scanf("%d", &opcao);
             switch (opcao)
