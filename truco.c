@@ -32,7 +32,6 @@ struct jogador
 
 // Protótipos das Funções
 
-/*
 /**
  * @brief Gera um número aleatório dentro de um intervalo específico, semeando o gerador uma vez.
  * @param max O valor máximo inclusivo.
@@ -40,35 +39,30 @@ struct jogador
  */
 int gerar_numero_aleatorio(int max);
 
-/*
 /**
  * @brief Atribui um número aleatório à carta.
  * @param carta Um ponteiro para a estrutura 'carta'.
  */
 void sorteio_numero_carta(struct carta *carta);
 
-/*
 /**
  * @brief Atribui um naipe aleatório à carta.
  * @param carta Um ponteiro para a estrutura 'carta'.
  */
 void sorteio_naipe(struct carta *carta);
 
-/*
 /**
  * @brief Cria uma nova carta com número e naipe aleatórios.
  * @return A estrutura 'carta' criada.
  */
 struct carta criar_carta_aleatoria(void);
 
-/*
 /**
  * @brief Solicita ao usuário o nome de um jogador e o armazena.
  * @param jogador Um ponteiro para a estrutura 'jogador'.
  */
 void adicionar_nome_jogador(struct jogador *jogador);
 
-/*
 /**
  * @brief Distribui 3 cartas aleatórias para a mão de um jogador.
  * @param jogador Um ponteiro para a estrutura 'jogador'.
@@ -77,7 +71,6 @@ void adicionar_nome_jogador(struct jogador *jogador);
  */
 void distribuir_cartas_jogador(struct jogador *jogador, struct carta cartas_em_jogo[], int *j);
 
-/*
 /**
  * @brief Adiciona jogadores a uma equipe, obtém seus nomes e distribui as cartas iniciais.
  * @param time Um array de estruturas 'jogador'.
@@ -85,14 +78,12 @@ void distribuir_cartas_jogador(struct jogador *jogador, struct carta cartas_em_j
  */
 void adicionar_equipe(struct jogador time[], int quantidade_jogadores);
 
-/*
 /**
  * @brief Exibe uma única carta no formato "númeroNaipe".
  * @param carta A estrutura 'carta' a ser exibida.
  */
 void exibir_carta(struct carta carta);
 
-/*
 /**
  * @brief Exibe todas as cartas na mão de um jogador.
  * @param mao Um array de estruturas 'carta' representando a mão.
@@ -100,7 +91,6 @@ void exibir_carta(struct carta carta);
  */
 void exibir_mao(struct carta mao[], int qtd_cartas);
 
-/*
 /**
  * @brief Exibe informações detalhadas de todos os jogadores em uma equipe.
  * @param time Um array de estruturas 'jogador'.
@@ -108,7 +98,6 @@ void exibir_mao(struct carta mao[], int qtd_cartas);
  */
 void exibir_time(struct jogador time[], int quantidade_jogadores);
 
-/*
 /**
  * @brief Exibe a equipe vencedora.
  * @param time Um array de estruturas 'jogador' representando a equipe vencedora.
@@ -116,7 +105,6 @@ void exibir_time(struct jogador time[], int quantidade_jogadores);
  */
 void exibir_ganhador(struct jogador time[], int quantidade_jogadores);
 
-/*
 /**
  * @brief Exibe as pontuações finais de ambas as equipes.
  * @param pontuacao_time_1 A pontuação final da Equipe 1.
@@ -124,7 +112,6 @@ void exibir_ganhador(struct jogador time[], int quantidade_jogadores);
  */
 void exibir_pontuacao_final(int pontuacao_time_1, int pontuacao_time_2);
 
-/*
 /**
  * @brief Exibe as pontuações atuais de ambas as equipes durante a partida.
  * @param pontuacao_time_1 A pontuação atual da Equipe 1.
@@ -132,7 +119,6 @@ void exibir_pontuacao_final(int pontuacao_time_1, int pontuacao_time_2);
  */
 void exibir_pontuacao_partida(int pontuacao_time_1, int pontuacao_time_2);
 
-/*
 /**
  * @brief Gerencia a conclusão do jogo, anunciando o vencedor e as pontuações finais.
  * @param time_1 Array de 'jogador' para a Equipe 1.
@@ -143,31 +129,32 @@ void exibir_pontuacao_partida(int pontuacao_time_1, int pontuacao_time_2);
  */
 void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontuacao_time_1, int pontuacao_time_2, int qtd_jagadores_cada_time);
 
-/*
 /**
- * @brief Lógica principal de uma rodada de Truco.
- * @param time_1 Array de 'jogador' para a Equipe 1.
- * @param time_2 Array de 'jogador' para a Equipe 2.
- * @param qtd_jogadores_cada_time Número de jogadores por equipe.
- * @param qtd_pontos_time1 Ponteiro para a pontuação da Equipe 1.
- * @param qtd_pontos_time2 Ponteiro para a pontuação da Equipe 2.
- * @param valor_partida Ponteiro para o valor atual dos pontos em jogo na rodada.
- * @param vira Ponteiro para a carta "vira" da rodada.
- * @param aceitou_truco Ponteiro para um booleano que indica se o truco foi aceito.
- * @param time_que_pediu_truco Ponteiro para o identificador do time que pediu truco (1 ou 2).
+ * @brief Gerencia a lógica principal de uma rodada de Truco.
+ *
+ * Esta função orquestra todas as etapas de uma rodada de Truco, desde a distribuição
+ * das cartas até a determinação do vencedor e a atualização das pontuações.
+ *
+ * @param time_1 Array de estruturas 'jogador' representando a Equipe 1.
+ * @param time_2 Array de estruturas 'jogador' representando a Equipe 2.
+ * @param qtd_jogadores_cada_time Número de jogadores em cada equipe (e.g., 1 para manilha, 2 para truco de dupla).
+ * @param qtd_pontos_time1 Ponteiro para a pontuação atual da Equipe 1.
+ * @param qtd_pontos_time2 Ponteiro para a pontuação atual da Equipe 2.
+ * @param valor_partida Ponteiro para o valor atual em pontos da mão (e.g., 1, 3, 6, 9, 12).
+ * @param vira Ponteiro para a carta "vira" da rodada, que define as manilhas.
+ * @param aceitou_truco Ponteiro para um booleano que indica se a aposta de truco foi aceita.
+ * @param time_que_pediu_truco Ponteiro para o identificador do time que pediu o truco (1 ou 2).
+ * @param pontos_valendo Ponteiro para o número de pontos que a rodada está valendo no momento.
+ * @param time_ganhador Ponteiro para o identificador do time que ganhou a rodada (1, 2 ou 0 para empate/não definido).
  */
-void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco, int *pontos_valendo, int *time_ganhador);
-void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, int *pontos_valendo, int *time_ganhador);
-/*
+void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco, int *time_ganhador);
 
-/*
 /**
  * @brief Solicita a um jogador que escolha uma carta para jogar.
  * @param jogador A estrutura 'jogador' do jogador atual.
  */
 void pedir_carta_jogar(struct jogador jogador);
 
-/*
 /**
  * @brief Retira uma carta da mão do jogador após ela ter sido jogada.
  * @param jogador Um ponteiro para a estrutura 'jogador'.
@@ -175,7 +162,6 @@ void pedir_carta_jogar(struct jogador jogador);
  */
 void retirar_carta_jogada(struct jogador *jogador, int posicao_carta_jogada);
 
-/*
 /**
  * @brief Lida com a jogada de uma carta por um jogador, incluindo a validação da entrada.
  * @param jogador Um ponteiro para a estrutura 'jogador'.
@@ -183,7 +169,6 @@ void retirar_carta_jogada(struct jogador *jogador, int posicao_carta_jogada);
  */
 struct carta jogar_carta(struct jogador *jogador);
 
-/*
 /**
  * @brief Lógica para o pedido de 'truco', atualizando o valor da rodada.
  * @param qtd_pontos_valendo Ponteiro para o valor atual dos pontos da rodada.
@@ -325,7 +310,6 @@ int main(void)
         exibir_pontuacao_final(pontuacao_time_1, pontuacao_time_2);
 
         int valor_round = 1;
-        int pontos_valendo = 1;
         int fez_primeira = 0;
         int vitorias_time1 = 0;
         int vitorias_time2 = 0;
@@ -342,7 +326,7 @@ int main(void)
         while (vitorias_time1 < 2 && vitorias_time2 < 2)
         {
             printf("-------------- Inicio da rodada interna %d-------------\n", rodadas_jogadas);
-            rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &valor_round, &vira, &pontos_valendo, &proximo_time);
+            rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &valor_round, &vira, &aceitou_truco, &time_que_pediu_truco, &fez_primeira);
 
             exibir_pontuacao_final(vitorias_time1, vitorias_time2);
 
@@ -505,40 +489,49 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
 
     struct carta carta_maior_1, carta_maior_2;
     int maior_posicao_1 = 0, maior_posicao_2 = 0;
-    
+
     // Jogadores jogam suas cartas
-    if (*time_ganhador == 2) {
+    if (*time_ganhador == 2)
+    {
         // Time 2 começa (ganhou a rodada anterior)
-        for (int i = 0; i < qtd_jogadores_cada_time; i++) {
-            struct carta atual_2 = escolher_acao(&time_2[i], valor_partida, *vira);
-            struct carta atual_1 = escolher_acao(&time_1[i], valor_partida, *vira);
-            
+        for (int i = 0; i < qtd_jogadores_cada_time; i++)
+        {
+            struct carta atual_2 = escolher_acao(&time_2[i], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, i + 1 != qtd_jogadores_cada_time ? time_1[i] : time_1[0]);
+            struct carta atual_1 = escolher_acao(&time_1[i], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 1, i + 1 != qtd_jogadores_cada_time ? time_2[i] : time_2[0]);
+
             // Verifica maior carta do time 2
-            if (i == 0 || comparar_cartas(atual_2, carta_maior_2, *vira) == '>') {
+            if (i == 0 || comparar_cartas(atual_2, carta_maior_2, *vira) == '>')
+            {
                 carta_maior_2 = atual_2;
                 maior_posicao_2 = i;
             }
-            
+
             // Verifica maior carta do time 1
-            if (i == 0 || comparar_cartas(atual_1, carta_maior_1, *vira) == '>') {
+            if (i == 0 || comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
+            {
                 carta_maior_1 = atual_1;
                 maior_posicao_1 = i;
             }
         }
-    } else {
+    }
+    else
+    {
         // Time 1 começa (padrão ou ganhou a rodada anterior)
-        for (int i = 0; i < qtd_jogadores_cada_time; i++) {
+        for (int i = 0; i < qtd_jogadores_cada_time; i++)
+        {
             struct carta atual_1 = escolher_acao(&time_1[i], valor_partida, *vira);
             struct carta atual_2 = escolher_acao(&time_2[i], valor_partida, *vira);
-            
+
             // Verifica maior carta do time 1
-            if (i == 0 || comparar_cartas(atual_1, carta_maior_1, *vira) == '>') {
+            if (i == 0 || comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
+            {
                 carta_maior_1 = atual_1;
                 maior_posicao_1 = i;
             }
-            
+
             // Verifica maior carta do time 2
-            if (i == 0 || comparar_cartas(atual_2, carta_maior_2, *vira) == '>') {
+            if (i == 0 || comparar_cartas(atual_2, carta_maior_2, *vira) == '>')
+            {
                 carta_maior_2 = atual_2;
                 maior_posicao_2 = i;
             }
@@ -547,12 +540,13 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
 
     // Determina o vencedor da rodada
     char resultado = comparar_cartas(carta_maior_1, carta_maior_2, *vira);
-    
-    if (resultado == '=') {
+
+    if (resultado == '=')
+    {
         // Empate
-        if (*qtd_pontos_time1 == 0 && *qtd_pontos_time2 == 0) 
+        if (*qtd_pontos_time1 == 0 && *qtd_pontos_time2 == 0)
         {
-            *pontos_valendo = 2;  // Empate na primeira rodada vale 2 pontos
+            *pontos_valendo = 2; // Empate na primeira rodada vale 2 pontos
         }
         else
         {
@@ -560,36 +554,38 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
             (*qtd_pontos_time2)++;
         }
         printf("\n\n--------------------------------------------\n");
-        printf("   Empate entre %s (%c%c) e %s (%c%c)\n", 
+        printf("   Empate entre %s (%c%c) e %s (%c%c)\n",
                time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe],
                time_2[maior_posicao_2].nome, SIMBOLOS[carta_maior_2.numero], NAIPES[carta_maior_2.naipe]);
         printf("--------------------------------------------\n");
-    } 
-    else if (resultado == '>') {
+    }
+    else if (resultado == '>')
+    {
         // Time 1 ganhou
         *qtd_pontos_time1 += *pontos_valendo;
         printf("\n\n----------------------------------\n");
-        printf("   Vitória de %s (%c%c)\n", 
+        printf("   Vitória de %s (%c%c)\n",
                time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe]);
         printf("----------------------------------\n");
-        
+
         // Atualiza times originais e troca ordem
-        if(*time_ganhador == 1)
+        if (*time_ganhador == 1)
             trocar_comeca(time_1, time_2, maior_posicao_1, 1, qtd_jogadores_cada_time);
         else
             trocar_comeca(time_2, time_1, maior_posicao_1, 2, qtd_jogadores_cada_time);
         *time_ganhador = 1;
-    } 
-    else {
+    }
+    else
+    {
         // Time 2 ganhou
         *qtd_pontos_time2 += *pontos_valendo;
         printf("\n\n----------------------------------\n");
-        printf("   Vitória de %s (%c%c)\n", 
+        printf("   Vitória de %s (%c%c)\n",
                time_2[maior_posicao_2].nome, SIMBOLOS[carta_maior_2.numero], NAIPES[carta_maior_2.naipe]);
         printf("----------------------------------\n");
-        
+
         // Atualiza times originais e troca ordem
-        if(*time_ganhador == 2)
+        if (*time_ganhador == 2)
             trocar_comeca(time_2, time_1, maior_posicao_2, 1, qtd_jogadores_cada_time);
         else
             trocar_comeca(time_1, time_2, maior_posicao_2, 2, qtd_jogadores_cada_time);
@@ -919,25 +915,29 @@ void copiar_time(struct jogador timea[], struct jogador timeb[], int qtd_jogador
 }
 
 void trocar_comeca(struct jogador time1[], struct jogador time2[], int posicao_nova, int time_novo, int qtd_jogadores)
- {
+{
 
     struct jogador temp[qtd_jogadores];
     int i, j = 0;
     // Garante que posicao_nova está dentro dos limites
-    if (posicao_nova >= qtd_jogadores) {
+    if (posicao_nova >= qtd_jogadores)
+    {
         posicao_nova = qtd_jogadores - 1;
     }
 
     // Sempre troca o jogador inicial do time vencedor para a posição 0
-    if (time_novo == 1) {
+    if (time_novo == 1)
+    {
 
         // Copia de posicao_escolhida até o fim
-        for (i = posicao_nova; i < qtd_jogadores; i++) {
+        for (i = posicao_nova; i < qtd_jogadores; i++)
+        {
             temp[j++] = time1[i];
         }
 
         // Depois, do início até posicao_escolhida - 1
-        for (i = 0; i < posicao_nova; i++) {
+        for (i = 0; i < posicao_nova; i++)
+        {
             temp[j++] = time1[i];
         }
 
@@ -947,27 +947,32 @@ void trocar_comeca(struct jogador time1[], struct jogador time2[], int posicao_n
         j = 0;
 
         // Copia de posicao_escolhida até o fim
-        for (i = posicao_nova; i < qtd_jogadores; i++) {
+        for (i = posicao_nova; i < qtd_jogadores; i++)
+        {
             temp[j++] = time2[i];
         }
 
         // Depois, do início até posicao_escolhida - 1
-        for (i = 0; i < posicao_nova; i++) {
+        for (i = 0; i < posicao_nova; i++)
+        {
             temp[j++] = time2[i];
         }
 
         // Copia de volta para o vetor original
         copiar_time(time2, temp, qtd_jogadores);
     }
-    else { // time_novo == 2
+    else
+    { // time_novo == 2
 
         // Copia de posicao_escolhida até o fim
-        for (i = posicao_nova; i < qtd_jogadores; i++) {
+        for (i = posicao_nova; i < qtd_jogadores; i++)
+        {
             temp[j++] = time2[i];
         }
 
         // Depois, do início até posicao_escolhida - 1
-        for (i = 0; i < posicao_nova; i++) {
+        for (i = 0; i < posicao_nova; i++)
+        {
             temp[j++] = time2[i];
         }
 
@@ -976,23 +981,24 @@ void trocar_comeca(struct jogador time1[], struct jogador time2[], int posicao_n
 
         j = 0;
 
-        if(posicao_nova == qtd_jogadores)
+        if (posicao_nova == qtd_jogadores)
             posicao_nova = 0;
-        else   
+        else
             posicao_nova++;
-        
-         // Copia de posicao_escolhida até o fim
-        for (i = posicao_nova; i < qtd_jogadores; i++) {
+
+        // Copia de posicao_escolhida até o fim
+        for (i = posicao_nova; i < qtd_jogadores; i++)
+        {
             temp[j++] = time1[i];
         }
 
         // Depois, do início até posicao_escolhida - 1
-        for (i = 0; i < posicao_nova; i++) {
+        for (i = 0; i < posicao_nova; i++)
+        {
             temp[j++] = time1[i];
         }
 
         // Copia de volta para o vetor original
         copiar_time(time1, temp, qtd_jogadores);
-        
     }
 }
