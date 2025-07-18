@@ -68,10 +68,10 @@ O jogo irá então solicitar o número de jogadores e os nomes para iniciar a pa
 
 Este projeto foi desenvolvido por:
 
-- **Gabriel Veríssimo**
+- **Gabriel Veríssimo Lopes (RA: 845566)**
 
 - **Hugo Aparecido Gregorio de Almeida (RA: 844917)**
 
-- **João Vitor Antoni**
+- **João Vitor de Antoni (845574)**
 
 - **Rafael Massaro Dias**
