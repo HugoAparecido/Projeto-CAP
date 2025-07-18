@@ -72,6 +72,6 @@ Este projeto foi desenvolvido por:
 
 - **Hugo Aparecido Gregorio de Almeida (RA: 844917)**
 
-- **João Vitor de Antoni (845574)**
+- **João Vitor de Antoni (RA: 845574)**
 
-- **Rafael Massaro Dias**
+- **Rafael Massaro Dias (RA: 846978)**
