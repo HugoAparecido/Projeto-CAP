@@ -147,7 +147,7 @@ void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontua
  * @param pontos_valendo Ponteiro para o número de pontos que a rodada está valendo no momento.
  * @param time_ganhador Ponteiro para o identificador do time que ganhou a rodada (1, 2 ou 0 para empate/não definido).
  */
-void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco, int *time_ganhador);
+void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco, int *time_ganhador, int *pontos_valendo);
 
 /**
  * @brief Solicita a um jogador que escolha uma carta para jogar.
@@ -219,13 +219,6 @@ void embaralhar(struct jogador time_1[], struct jogador time_2[], int numero_jog
  * @return Um caractere indicando o resultado da comparação ('M' se carta_jogada for maior, 'm' se carta_maior for maior, 'E' se forem iguais).
  */
 char comparar_cartas(struct carta carta_maior, struct carta carta_jogada, struct carta vira);
-
-/**
- * @brief Define qual jogador (e seu time) ganhou a rodada.
- * @param time Um array de estruturas 'jogador' representando o time do ganhador.
- * @param posicao_ganhador O índice do jogador que ganhou a rodada dentro do array 'time'.
- */
-void quem_ganhou_rodada(struct jogador time[], int posicao_ganhador);
 
 void trocar_comeca(struct jogador time1[], struct jogador time2[], int posicao_nova, int time_novo, int qtd_jogadores);
 
@@ -310,14 +303,13 @@ int main(void)
         exibir_pontuacao_final(pontuacao_time_1, pontuacao_time_2);
 
         int valor_round = 1;
+        int pontos_valendo = 1;
         int fez_primeira = 0;
         int vitorias_time1 = 0;
         int vitorias_time2 = 0;
         int rodadas_jogadas = 1;
 
         embaralhar(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, cartas_em_jogo, qtd_carta, &vira);
-        exibir_time(time_1_jogadores, qtd_jogadores_cada_time);
-        exibir_time(time_2_jogadores, qtd_jogadores_cada_time);
 
         bool aceitou_truco = false;
 
@@ -326,7 +318,7 @@ int main(void)
         while (vitorias_time1 < 2 && vitorias_time2 < 2)
         {
             printf("-------------- Inicio da rodada interna %d-------------\n", rodadas_jogadas);
-            rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &valor_round, &vira, &aceitou_truco, &time_que_pediu_truco, &fez_primeira);
+            rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &valor_round, &vira, &aceitou_truco, &time_que_pediu_truco, &proximo_time, &pontos_valendo);
 
             exibir_pontuacao_final(vitorias_time1, vitorias_time2);
 
@@ -484,10 +476,11 @@ void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontua
     exibir_pontuacao_final(pontuacao_time_1, pontuacao_time_2);
 }
 
-void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco, int *time_ganhador)
+void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco, int *time_ganhador, int *pontos_valendo)
 {
 
     struct carta carta_maior_1, carta_maior_2;
+    struct carta atual_1, atual_2;
     int maior_posicao_1 = 0, maior_posicao_2 = 0;
 
     // Jogadores jogam suas cartas
@@ -496,22 +489,30 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
         // Time 2 começa (ganhou a rodada anterior)
         for (int i = 0; i < qtd_jogadores_cada_time; i++)
         {
-            struct carta atual_2 = escolher_acao(&time_2[i], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, i + 1 != qtd_jogadores_cada_time ? time_1[i] : time_1[0]);
-            struct carta atual_1 = escolher_acao(&time_1[i], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 1, i + 1 != qtd_jogadores_cada_time ? time_2[i] : time_2[0]);
-
-            // Verifica maior carta do time 2
-            if (i == 0 || comparar_cartas(atual_2, carta_maior_2, *vira) == '>')
+            atual_2 = escolher_acao(&time_2[i], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, i + 1 != qtd_jogadores_cada_time ? time_1[i] : time_1[0]);
+            if (*time_que_pediu_truco == NINGUEM_PEDIU_TRUCO || (*time_que_pediu_truco == TIME_INICIANTE_PARTIDA && *aceitou_truco))
+                atual_1 = escolher_acao(&time_1[i], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 1, i + 1 != qtd_jogadores_cada_time ? time_2[i] : time_2[0]);
+            if (*aceitou_truco || (!(*aceitou_truco) && *valor_partida == 1 && *time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
             {
-                carta_maior_2 = atual_2;
-                maior_posicao_2 = i;
-            }
 
-            // Verifica maior carta do time 1
-            if (i == 0 || comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
-            {
-                carta_maior_1 = atual_1;
-                maior_posicao_1 = i;
+                // Verifica maior carta do time 2
+                if (i == 0 || comparar_cartas(atual_2, carta_maior_2, *vira) == '>')
+                {
+                    carta_maior_2 = atual_2;
+                    maior_posicao_2 = i;
+                }
+
+                // Verifica maior carta do time 1
+                if (i == 0 || comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
+                {
+                    carta_maior_1 = atual_1;
+                    maior_posicao_1 = i;
+                }
             }
+            else if (*time_que_pediu_truco == 1)
+                *qtd_pontos_time1 = 2;
+            else
+                *qtd_pontos_time2 = 2;
         }
     }
     else
@@ -519,110 +520,27 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
         // Time 1 começa (padrão ou ganhou a rodada anterior)
         for (int i = 0; i < qtd_jogadores_cada_time; i++)
         {
-            struct carta atual_1 = escolher_acao(&time_1[i], valor_partida, *vira);
-            struct carta atual_2 = escolher_acao(&time_2[i], valor_partida, *vira);
-
-            // Verifica maior carta do time 1
-            if (i == 0 || comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
+            atual_1 = escolher_acao(&time_1[i], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, 1, i + 1 != qtd_jogadores_cada_time ? time_2[i] : time_2[0]);
+            if (*time_que_pediu_truco == NINGUEM_PEDIU_TRUCO || (*time_que_pediu_truco == TIME_INICIANTE_PARTIDA && *aceitou_truco))
+                atual_2 = escolher_acao(&time_2[i], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, i + 1 != qtd_jogadores_cada_time ? time_1[i] : time_1[0]);
+            if (*aceitou_truco || (!(*aceitou_truco) && *valor_partida == 1 && *time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
             {
-                carta_maior_1 = atual_1;
-                maior_posicao_1 = i;
+
+                // Verifica maior carta do time 1
+                if (i == 0 || comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
+                {
+                    carta_maior_1 = atual_1;
+                    maior_posicao_1 = i;
+                }
+
+                // Verifica maior carta do time 2
+                if (i == 0 || comparar_cartas(atual_2, carta_maior_2, *vira) == '>')
+                {
+                    carta_maior_2 = atual_2;
+                    maior_posicao_2 = i;
+                }
             }
-
-            // Verifica maior carta do time 2
-            if (i == 0 || comparar_cartas(atual_2, carta_maior_2, *vira) == '>')
-            {
-                carta_maior_2 = atual_2;
-                maior_posicao_2 = i;
-            }
-        }
-    }
-
-    // Determina o vencedor da rodada
-    char resultado = comparar_cartas(carta_maior_1, carta_maior_2, *vira);
-
-    if (resultado == '=')
-    {
-        // Empate
-        if (*qtd_pontos_time1 == 0 && *qtd_pontos_time2 == 0)
-        {
-            *pontos_valendo = 2; // Empate na primeira rodada vale 2 pontos
-        }
-        else
-        {
-            (*qtd_pontos_time1)++;
-            (*qtd_pontos_time2)++;
-        }
-        printf("\n\n--------------------------------------------\n");
-        printf("   Empate entre %s (%c%c) e %s (%c%c)\n",
-               time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe],
-               time_2[maior_posicao_2].nome, SIMBOLOS[carta_maior_2.numero], NAIPES[carta_maior_2.naipe]);
-        printf("--------------------------------------------\n");
-    }
-    else if (resultado == '>')
-    {
-        // Time 1 ganhou
-        *qtd_pontos_time1 += *pontos_valendo;
-        printf("\n\n----------------------------------\n");
-        printf("   Vitória de %s (%c%c)\n",
-               time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe]);
-        printf("----------------------------------\n");
-
-        // Atualiza times originais e troca ordem
-        if (*time_ganhador == 1)
-            trocar_comeca(time_1, time_2, maior_posicao_1, 1, qtd_jogadores_cada_time);
-        else
-            trocar_comeca(time_2, time_1, maior_posicao_1, 2, qtd_jogadores_cada_time);
-        *time_ganhador = 1;
-    }
-    else
-    {
-        // Time 2 ganhou
-        *qtd_pontos_time2 += *pontos_valendo;
-        printf("\n\n----------------------------------\n");
-        printf("   Vitória de %s (%c%c)\n",
-               time_2[maior_posicao_2].nome, SIMBOLOS[carta_maior_2.numero], NAIPES[carta_maior_2.naipe]);
-        printf("----------------------------------\n");
-
-        // Atualiza times originais e troca ordem
-        if (*time_ganhador == 2)
-            trocar_comeca(time_2, time_1, maior_posicao_2, 1, qtd_jogadores_cada_time);
-        else
-            trocar_comeca(time_1, time_2, maior_posicao_2, 2, qtd_jogadores_cada_time);
-        *time_ganhador = 2;
-    }
-
-    if (*time_que_pediu_truco == NINGUEM_PEDIU_TRUCO || (*time_que_pediu_truco == TIME_INICIANTE_PARTIDA && *aceitou_truco))
-        atual_2 = escolher_acao(&time_2[0], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, qtd_jogadores_cada_time > 1 ? time_1[1] : time_1[0]);
-    struct carta carta_maior_1 = atual_1;
-    struct carta carta_maior_2 = atual_2;
-    int maior_posicao_1 = 0;
-    int maior_posicao_2 = 0;
-    for (int i = 0; i < qtd_jogadores_cada_time; i++)
-    {
-        if (*aceitou_truco || (!(*aceitou_truco) && *valor_partida == 1 && *time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
-        {
-            if (comparar_cartas(atual_1, carta_maior_1, *vira) == '>')
-            {
-                carta_maior_1 = atual_1;
-                maior_posicao_1 = i;
-            }
-
-            if (comparar_cartas(atual_2, carta_maior_2, *vira) == '>')
-            {
-                carta_maior_2 = atual_2;
-                maior_posicao_2 = i;
-            }
-            if (i + 1 < qtd_jogadores_cada_time)
-            {
-                atual_1 = escolher_acao(&time_1[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_INICIANTE_PARTIDA, time_2[i + 1]);
-                if (*time_que_pediu_truco == NINGUEM_PEDIU_TRUCO || (*time_que_pediu_truco == TIME_INICIANTE_PARTIDA && *aceitou_truco))
-                    atual_2 = escolher_acao(&time_2[i + 1], valor_partida, *vira, aceitou_truco, time_que_pediu_truco, TIME_ADVERSARIO, qtd_jogadores_cada_time > i + 2 ? time_1[i + 2] : time_1[0]);
-            }
-        }
-        else
-        {
-            if (*time_que_pediu_truco == 1)
+            else if (*time_que_pediu_truco == 1)
                 *qtd_pontos_time1 = 2;
             else
                 *qtd_pontos_time2 = 2;
@@ -636,29 +554,55 @@ void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_joga
 
     if (*aceitou_truco || (!(*aceitou_truco) && *valor_partida == 1 && *time_que_pediu_truco == NINGUEM_PEDIU_TRUCO))
     {
-        if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '=')
+        int resultado = comparar_cartas(carta_maior_1, carta_maior_2, *vira);
+        if (resultado == '=')
         {
-            (*qtd_pontos_time1)++;
-            (*qtd_pontos_time2)++;
+            if (*qtd_pontos_time1 == 0 && *qtd_pontos_time2 == 0)
+            {
+                *pontos_valendo = 2; // Empate na primeira rodada vale 2 pontos
+            }
+            else
+            {
+                (*qtd_pontos_time1)++;
+                (*qtd_pontos_time2)++;
+            }
             printf("\n\n--------------------------------------------\n");
-            printf("   As cartas de %s: %c%c e de %s: %c%c empacharam\n", time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe], time_2[maior_posicao_2].nome, carta_maior_2.numero, NAIPES[carta_maior_2.naipe]);
+            printf("   Empate entre %s (%c%c) e %s (%c%c)\n",
+                   time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe],
+                   time_2[maior_posicao_2].nome, SIMBOLOS[carta_maior_2.numero], NAIPES[carta_maior_2.naipe]);
             printf("--------------------------------------------\n");
         }
-        else if (comparar_cartas(carta_maior_1, carta_maior_2, *vira) == '>')
+        else if (resultado == '>')
         {
-            (*qtd_pontos_time1)++;
+            *qtd_pontos_time1 += *pontos_valendo;
+            // Time 1 ganhou
             printf("\n\n----------------------------------\n");
-            printf("   Maior Carta foi de %s: %c%c\n", time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe]);
+            printf("   Vitória de %s (%c%c)\n",
+                   time_1[maior_posicao_1].nome, SIMBOLOS[carta_maior_1.numero], NAIPES[carta_maior_1.naipe]);
             printf("----------------------------------\n");
-            quem_ganhou_rodada(time_1, maior_posicao_1);
+
+            // Atualiza times originais e troca ordem
+            if (*time_ganhador == 1)
+                trocar_comeca(time_1, time_2, maior_posicao_1, 1, qtd_jogadores_cada_time);
+            else
+                trocar_comeca(time_2, time_1, maior_posicao_1, 2, qtd_jogadores_cada_time);
+            *time_ganhador = 1;
         }
         else
         {
-            (*qtd_pontos_time2)++;
+            *qtd_pontos_time2 += *pontos_valendo;
+            // Time 2 ganhou
             printf("\n\n----------------------------------\n");
-            printf("   Maior Carta foi de %s: %c%c\n", time_2[maior_posicao_2].nome, SIMBOLOS[carta_maior_2.numero], NAIPES[carta_maior_2.naipe]);
+            printf("   Vitória de %s (%c%c)\n",
+                   time_2[maior_posicao_2].nome, SIMBOLOS[carta_maior_2.numero], NAIPES[carta_maior_2.naipe]);
             printf("----------------------------------\n");
-            quem_ganhou_rodada(time_2, maior_posicao_2);
+
+            // Atualiza times originais e troca ordem
+            if (*time_ganhador == 2)
+                trocar_comeca(time_2, time_1, maior_posicao_2, 1, qtd_jogadores_cada_time);
+            else
+                trocar_comeca(time_1, time_2, maior_posicao_2, 2, qtd_jogadores_cada_time);
+            *time_ganhador = 2;
         }
     }
 }
@@ -789,7 +733,6 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
                 else
                     aumentar_truco(valor_partida);
                 *time_que_pediu_truco = time_atual;
-                printf("Agora a rodada vale %d pontos!\n", *valor_partida);
                 break;
             default:
                 printf("Opção inválida!!!");
@@ -858,13 +801,6 @@ char comparar_cartas(struct carta a, struct carta b, struct carta vira)
     return resultado;
 }
 
-void quem_ganhou_rodada(struct jogador time[], int posicao_ganhador)
-{
-    struct jogador posicao_temporaria = time[posicao_ganhador];
-    time[posicao_ganhador] = time[0];
-    time[0] = posicao_temporaria;
-}
-
 struct carta troca_repetida(struct carta nova_carta, struct carta cartas_em_jogo[])
 {
     while (eh_repetida(nova_carta, cartas_em_jogo))
@@ -899,11 +835,6 @@ void zerar_cartas_em_jogo(struct carta *cartas, int qtd)
 bool cartas_iguais(struct carta primeira_carta, struct carta segunda_carta)
 {
     return primeira_carta.numero == segunda_carta.numero && primeira_carta.naipe == segunda_carta.naipe;
-}
-
-bool cartas_iguais(struct carta a, struct carta b)
-{
-    return a.numero == b.numero && a.naipe == b.naipe;
 }
 
 void copiar_time(struct jogador timea[], struct jogador timeb[], int qtd_jogadores)
