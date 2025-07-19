@@ -198,7 +198,7 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
  * @brief Aumenta o valor da aposta do truco na partida.
  * @param valor_partida Ponteiro para o valor atual dos pontos em jogo na rodada, que será incrementado.
  */
-void aumentar_truco(int *valor_partida);
+void aumentar_truco(int *valor_partida, struct jogador jogador_que_responde, bool *aceitou_truco);
 
 /**
  * @brief Embaralha e distribui as cartas para os jogadores e define a carta "vira".
@@ -320,7 +320,7 @@ int main(void)
             printf("-------------- Inicio da rodada interna %d-------------\n", rodadas_jogadas);
             rodada_truco(time_1_jogadores, time_2_jogadores, qtd_jogadores_cada_time, &vitorias_time1, &vitorias_time2, &valor_round, &vira, &aceitou_truco, &time_que_pediu_truco, &proximo_time, &pontos_valendo);
 
-            exibir_pontuacao_final(vitorias_time1, vitorias_time2);
+            exibir_pontuacao_partida(vitorias_time1, vitorias_time2);
 
             if (vitorias_time1 == 2 && vitorias_time2 == 2)
             {
@@ -654,13 +654,7 @@ struct carta jogar_carta(struct jogador *jogador)
 
 void pedir_truco(int *qtd_pontos_valendo)
 {
-    printf("Quanto deseja pedir: 3, 6, 9 ou 12?\n");
-    scanf("%d", qtd_pontos_valendo);
-    while (*qtd_pontos_valendo != 3 && *qtd_pontos_valendo != 6 && *qtd_pontos_valendo != 9 && *qtd_pontos_valendo != 12)
-    {
-        printf("Você inseriu um valor inválido, os valores válidos são 3, 6, 9 ou 12\n");
-        scanf("%d", qtd_pontos_valendo);
-    }
+    *qtd_pontos_valendo = 3;
 }
 
 void aceitar_truco(bool *aceitou_truco, struct jogador jogador_que_responde)
@@ -679,12 +673,27 @@ void aceitar_truco(bool *aceitou_truco, struct jogador jogador_que_responde)
     *aceitou_truco = (resposta == 'S' || resposta == 's');
 }
 
-void aumentar_truco(int *valor_partida)
+void aumentar_truco(int *valor_partida, struct jogador jogador_que_responde, bool *aceitou_truco)
 {
     if (*valor_partida == 12)
         printf("Não é possível pedir pontuação maior que 12\n");
     else
-        *valor_partida += 3;
+    {
+        printf("\n\n--------------------------------------\n");
+        printf("----------Vez de %s----------\n", jogador_que_responde.nome);
+        printf("Deseja aceitar o truco? (S ou N):\n");
+        char resposta = 'A';
+        scanf(" %c", &resposta);
+        while (resposta != 'S' && resposta != 'N' && resposta != 's' && resposta != 'n')
+        {
+            printf("Valor indesejado, digite novamente!!\n");
+            printf("Deseja aceitar o truco? (S ou N):\n");
+            scanf("%c", &resposta);
+        }
+        *aceitou_truco = (resposta == 'S' || resposta == 's');
+        if ((*aceitou_truco))
+            *valor_partida += 3;
+    }
 }
 
 struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira, bool *aceitou_truco, int *time_que_pediu_truco, int time_atual, struct jogador proximo_jogador)
@@ -699,6 +708,8 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
             *valor_partida = !(*aceitou_truco) ? 1 : (*valor_partida);
             if (!(*aceitou_truco))
                 opcao = 2;
+            else
+                printf("Agora a partida vale %d\n", *valor_partida);
         }
         else
         {
@@ -731,7 +742,7 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
                 if (!(*aceitou_truco))
                     pedir_truco(valor_partida);
                 else
-                    aumentar_truco(valor_partida);
+                    aumentar_truco(valor_partida, proximo_jogador, aceitou_truco);
                 *time_que_pediu_truco = time_atual;
                 break;
             default:
