@@ -262,17 +262,23 @@ int main(void)
 {
     int pontuacao_time_1 = 0;
     int pontuacao_time_2 = 0;
-    int numero_jogadores;
+    int numero_jogadores = 0;
     int qtd_jogadores_cada_time;
 
     setlocale(LC_ALL, "Portuguese");
-
     printf("Bem-vindo ao jogo de Truco!\n");
     printf("Por favor, informe o número de jogadores (2, 4 ou 6): ");
-    scanf("%d", &numero_jogadores);
-
-    while (getchar() != '\n')
-        ;
+    char entrada[3];
+    while (numero_jogadores != 2 && numero_jogadores != 4 && numero_jogadores != 6)
+    {
+        fgets(entrada, sizeof entrada, stdin);
+        sscanf(entrada, "%d", &numero_jogadores);
+        if (numero_jogadores != 2 && numero_jogadores != 4 && numero_jogadores != 6)
+        {
+            printf("Valor inválido!!!");
+            printf("Por favor, informe o número de jogadores (2, 4 ou 6): ");
+        }
+    }
 
     qtd_jogadores_cada_time = numero_jogadores / 2;
     int qtd_carta = numero_jogadores * 3 + 1;
@@ -692,7 +698,10 @@ void aumentar_truco(int *valor_partida, struct jogador jogador_que_responde, boo
         }
         *aceitou_truco = (resposta == 'S' || resposta == 's');
         if ((*aceitou_truco))
+        {
             *valor_partida += 3;
+            printf("Agora a partida vale %d\n", *valor_partida);
+        }
     }
 }
 
