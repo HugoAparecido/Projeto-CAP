@@ -749,9 +749,20 @@ struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct c
             }
             case 3:
                 if (!(*aceitou_truco))
+                {
                     pedir_truco(valor_partida);
+                    aceitar_truco(aceitou_truco, proximo_jogador);
+                    *valor_partida = !(*aceitou_truco) ? 1 : (*valor_partida);
+                    if (!(*aceitou_truco))
+                        opcao = 2;
+                }
                 else
+                {
                     aumentar_truco(valor_partida, proximo_jogador, aceitou_truco);
+                    *valor_partida = !(*aceitou_truco) ? 1 : (*valor_partida);
+                    if (!(*aceitou_truco))
+                        opcao = 2;
+                }
                 *time_que_pediu_truco = time_atual;
                 break;
             default:
