@@ -33,226 +33,315 @@ struct jogador
 // Protótipos das Funções
 
 /**
- * @brief Gera um número aleatório dentro de um intervalo específico, semeando o gerador uma vez.
+ * @brief Gera um número aleatório no intervalo [0, max], semeando o gerador uma vez.
  * @param max O valor máximo inclusivo.
  * @return Um número inteiro aleatório entre 0 e 'max'.
  */
 int gerar_numero_aleatorio(int max);
 
 /**
- * @brief Atribui um número aleatório à carta.
- * @param carta Um ponteiro para a estrutura 'carta'.
+ * @brief Atribui um número aleatório (1-10) ao campo 'numero' da carta.
+ * @param carta Ponteiro para a estrutura 'carta' a ser atualizada.
  */
 void sorteio_numero_carta(struct carta *carta);
 
 /**
- * @brief Atribui um naipe aleatório à carta.
- * @param carta Um ponteiro para a estrutura 'carta'.
+ * @brief Atribui um naipe aleatório (0-3) ao campo 'naipe' da carta.
+ * @param carta Ponteiro para a estrutura 'carta' a ser atualizada.
  */
 void sorteio_naipe(struct carta *carta);
 
 /**
- * @brief Cria uma nova carta com número e naipe aleatórios.
- * @return A estrutura 'carta' criada.
+ * @brief Cria e retorna uma nova carta com número e naipe aleatórios.
+ * @return Uma nova estrutura 'carta' com valores aleatórios.
  */
 struct carta criar_carta_aleatoria(void);
 
 /**
- * @brief Solicita ao usuário o nome de um jogador e o armazena.
- * @param jogador Um ponteiro para a estrutura 'jogador'.
+ * @brief Solicita e armazena o nome do jogador.
+ * @param jogador Ponteiro para a estrutura 'jogador' a ser atualizada.
  */
 void adicionar_nome_jogador(struct jogador *jogador);
 
 /**
- * @brief Distribui 3 cartas aleatórias para a mão de um jogador.
- * @param jogador Um ponteiro para a estrutura 'jogador'.
- * @param cartas_em_jogo Um array das cartas já distribuídas ou em uso no jogo, para evitar repetições.
- * @param j Um ponteiro para o índice da próxima carta disponível em 'cartas_em_jogo'.
+ * @brief Distribui três cartas aleatórias e únicas para um jogador.
+ *
+ * Esta função gera três cartas aleatórias para a mão do jogador, garantindo
+ * que não haja repetições com as cartas já em jogo. Ela também atualiza
+ * a lista global de cartas em jogo e a contagem de cartas restantes do jogador.
+ *
+ * @param jogador Ponteiro para a estrutura 'jogador' que receberá as cartas.
+ * @param cartas_em_jogo Array de estruturas 'carta' que armazena todas as cartas já distribuídas no jogo.
+ * @param j Ponteiro para um inteiro que serve como índice para 'cartas_em_jogo', indicando a próxima posição disponível.
  */
 void distribuir_cartas_jogador(struct jogador *jogador, struct carta cartas_em_jogo[], int *j);
 
 /**
- * @brief Adiciona jogadores a uma equipe, obtém seus nomes e distribui as cartas iniciais.
- * @param time Um array de estruturas 'jogador'.
- * @param quantidade_jogadores O número de jogadores na equipe.
+ * @brief Adiciona nomes para cada jogador em uma equipe.
+ * @param time Array de estruturas 'jogador' representando a equipe.
+ * @param quantidade_jogadores Número de jogadores na equipe.
  */
 void adicionar_equipe(struct jogador time[], int quantidade_jogadores);
 
 /**
- * @brief Exibe uma única carta no formato "númeroNaipe".
+ * @brief Exibe uma carta no formato de símbolo e naipe.
  * @param carta A estrutura 'carta' a ser exibida.
  */
 void exibir_carta(struct carta carta);
 
 /**
  * @brief Exibe todas as cartas na mão de um jogador.
- * @param mao Um array de estruturas 'carta' representando a mão.
- * @param qtd_cartas O número de cartas na mão.
+ * @param mao Array de estruturas 'carta' representando a mão.
+ * @param qtd_cartas Número de cartas na mão.
  */
 void exibir_mao(struct carta mao[], int qtd_cartas);
 
 /**
- * @brief Exibe informações detalhadas de todos os jogadores em uma equipe.
- * @param time Um array de estruturas 'jogador'.
- * @param quantidade_jogadores O número de jogadores na equipe.
+ * @brief Exibe o nome de cada jogador em uma equipe.
+ * @param time Array de estruturas 'jogador' representando a equipe.
+ * @param quantidade_jogadores Número de jogadores na equipe.
  */
 void exibir_time(struct jogador time[], int quantidade_jogadores);
 
 /**
- * @brief Exibe a equipe vencedora.
- * @param time Um array de estruturas 'jogador' representando a equipe vencedora.
- * @param quantidade_jogadores O número de jogadores na equipe vencedora.
+ * @brief Exibe a equipe vencedora do jogo.
+ * @param time Array de estruturas 'jogador' representando a equipe ganhadora.
+ * @param quantidade_jogadores Número de jogadores na equipe vencedora.
  */
 void exibir_ganhador(struct jogador time[], int quantidade_jogadores);
 
 /**
- * @brief Exibe as pontuações finais de ambas as equipes.
- * @param pontuacao_time_1 A pontuação final da Equipe 1.
- * @param pontuacao_time_2 A pontuação final da Equipe 2.
+ * @brief Exibe a pontuação final de ambos os times.
+ * @param pontuacao_time_1 Pontuação total do Time 1.
+ * @param pontuacao_time_2 Pontuação total do Time 2.
  */
 void exibir_pontuacao_final(int pontuacao_time_1, int pontuacao_time_2);
 
 /**
- * @brief Exibe as pontuações atuais de ambas as equipes durante a partida.
- * @param pontuacao_time_1 A pontuação atual da Equipe 1.
- * @param pontuacao_time_2 A pontuacao atual da Equipe 2.
+ * @brief Exibe a pontuação de uma partida específica de truco.
+ * @param pontuacao_time_1 Pontuação do Time 1 nesta partida.
+ * @param pontuacao_time_2 Pontuação do Time 2 nesta partida.
  */
 void exibir_pontuacao_partida(int pontuacao_time_1, int pontuacao_time_2);
 
 /**
- * @brief Gerencia a conclusão do jogo, anunciando o vencedor e as pontuações finais.
- * @param time_1 Array de 'jogador' para a Equipe 1.
- * @param time_2 Array de 'jogador' para a Equipe 2.
- * @param pontuacao_time_1 Pontuação final da Equipe 1.
- * @param pontuacao_time_2 Pontuação final da Equipe 2.
- * @param qtd_jagadores_cada_time Número de jogadores por equipe.
+ * @brief Finaliza o jogo, exibindo o time ganhador e a pontuação final.
+ * @param time_1 Array de estruturas 'jogador' do Time 1.
+ * @param time_2 Array de estruturas 'jogador' do Time 2.
+ * @param pontuacao_time_1 Pontuação final do Time 1.
+ * @param pontuacao_time_2 Pontuação final do Time 2.
+ * @param qtd_jogadores_cada_time Número de jogadores em cada time.
  */
-void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontuacao_time_1, int pontuacao_time_2, int qtd_jagadores_cada_time);
-
+void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontuacao_time_1, int pontuacao_time_2, int qtd_jogadores_cada_time);
 /**
- * @brief Gerencia a lógica principal de uma rodada de Truco.
+ * @brief Gerencia uma rodada de truco, incluindo a jogada de cartas e determinação do vencedor da rodada.
  *
- * Esta função orquestra todas as etapas de uma rodada de Truco, desde a distribuição
- * das cartas até a determinação do vencedor e a atualização das pontuações.
+ * Esta função orquestra uma única rodada do jogo de truco. Jogadores de ambos os times
+ * escolhem suas cartas (ou pedem truco/retruco), as cartas são comparadas, e o time
+ * vencedor da rodada é determinado. Lida com a lógica de quem começa a jogar,
+ * aceitação ou recusa de truco, e a atualização das pontuações e do time ganhador.
  *
- * @param time_1 Array de estruturas 'jogador' representando a Equipe 1.
- * @param time_2 Array de estruturas 'jogador' representando a Equipe 2.
- * @param qtd_jogadores_cada_time Número de jogadores em cada equipe (e.g., 1 para manilha, 2 para truco de dupla).
- * @param qtd_pontos_time1 Ponteiro para a pontuação atual da Equipe 1.
- * @param qtd_pontos_time2 Ponteiro para a pontuação atual da Equipe 2.
- * @param valor_partida Ponteiro para o valor atual em pontos da mão (e.g., 1, 3, 6, 9, 12).
- * @param vira Ponteiro para a carta "vira" da rodada, que define as manilhas.
- * @param aceitou_truco Ponteiro para um booleano que indica se a aposta de truco foi aceita.
- * @param time_que_pediu_truco Ponteiro para o identificador do time que pediu o truco (1 ou 2).
- * @param pontos_valendo Ponteiro para o número de pontos que a rodada está valendo no momento.
- * @param time_ganhador Ponteiro para o identificador do time que ganhou a rodada (1, 2 ou 0 para empate/não definido).
+ * @param time_1 Array de estruturas 'jogador' do Time 1.
+ * @param time_2 Array de estruturas 'jogador' do Time 2.
+ * @param qtd_jogadores_cada_time Número de jogadores em cada time.
+ * @param qtd_pontos_time1 Ponteiro para a pontuação atual do Time 1 na partida.
+ * @param qtd_pontos_time2 Ponteiro para a pontuação atual do Time 2 na partida.
+ * @param valor_partida Ponteiro para o valor atual dos pontos da partida (e.g., 1, 3, 6, 9, 12).
+ * @param vira Ponteiro para a carta "vira" da rodada, que define as "manilhas".
+ * @param aceitou_truco Ponteiro para um booleano que indica se o truco foi aceito.
+ * @param time_que_pediu_truco Ponteiro para um inteiro que indica qual time pediu truco (0 se ninguém pediu, 1 para Time 1, 2 para Time 2).
+ * @param time_ganhador Ponteiro para um inteiro que indica qual time ganhou a rodada anterior (influencia quem começa a jogar).
+ * @param pontos_valendo Ponteiro para um inteiro que indica quantos pontos a rodada atual está valendo.
  */
 void rodada_truco(struct jogador time_1[], struct jogador time_2[], int qtd_jogadores_cada_time, int *qtd_pontos_time1, int *qtd_pontos_time2, int *valor_partida, struct carta *vira, bool *aceitou_truco, int *time_que_pediu_truco, int *time_ganhador, int *pontos_valendo);
 
 /**
- * @brief Solicita a um jogador que escolha uma carta para jogar.
- * @param jogador A estrutura 'jogador' do jogador atual.
+ * @brief Solicita ao jogador qual carta ele deseja jogar, exibindo as opções disponíveis.
+ * @param jogador A estrutura 'jogador' cujas cartas serão exibidas.
  */
 void pedir_carta_jogar(struct jogador jogador);
 
 /**
- * @brief Retira uma carta da mão do jogador após ela ter sido jogada.
- * @param jogador Um ponteiro para a estrutura 'jogador'.
- * @param posicao_carta_jogada A posição (índice) da carta jogada na mão do jogador.
+ * @brief Remove uma carta da mão do jogador após ser jogada.
+ *
+ * Esta função "remove" uma carta da mão do jogador, substituindo-a pela
+ * última carta restante na mão e decrementando a contagem de cartas.
+ * Não mantém a ordem das cartas restantes.
+ *
+ * @param jogador Ponteiro para a estrutura 'jogador' cuja carta será removida.
+ * @param posicao_carta_jogada A posição (índice) da carta que foi jogada na mão do jogador.
  */
 void retirar_carta_jogada(struct jogador *jogador, int posicao_carta_jogada);
 
 /**
- * @brief Lida com a jogada de uma carta por um jogador, incluindo a validação da entrada.
- * @param jogador Um ponteiro para a estrutura 'jogador'.
- * @return A estrutura 'carta' jogada pelo jogador.
+ * @brief Permite que um jogador escolha e jogue uma carta da sua mão.
+ *
+ * Esta função interage com o jogador, exibindo suas cartas disponíveis
+ * e solicitando a escolha de uma. Valida a entrada do usuário e, após
+ * uma escolha válida, remove a carta da mão do jogador e a retorna.
+ *
+ * @param jogador Ponteiro para a estrutura 'jogador' que irá jogar a carta.
+ * @return A estrutura 'carta' que foi escolhida e jogada pelo jogador.
  */
 struct carta jogar_carta(struct jogador *jogador);
 
 /**
- * @brief Lógica para o pedido de 'truco', atualizando o valor da rodada.
- * @param qtd_pontos_valendo Ponteiro para o valor atual dos pontos da rodada.
+ * @brief Altera o valor dos pontos da rodada para 3 (pede truco).
+ * @param qtd_pontos_valendo Ponteiro para a variável que armazena os pontos atuais da rodada.
  */
 void pedir_truco(int *qtd_pontos_valendo);
 
 /**
- * @brief Lógica para aceitar um pedido de truco.
- * @param aceitou_truco Ponteiro para um booleano que indica se o truco foi aceito.
+ * @brief Pergunta ao jogador se deseja aceitar um pedido de truco.
+ *
+ * Esta função interage com o jogador que precisa responder ao truco,
+ * solicitando uma confirmação (S/N) e atualizando o status de aceitação do truco.
+ *
+ * @param aceitou_truco Ponteiro para um booleano que será definido como true se o truco for aceito, false caso contrário.
+ * @param jogador_que_responde A estrutura 'jogador' que está respondendo ao truco.
  */
 void aceitar_truco(bool *aceitou_truco, struct jogador jogador_que_responde);
 
 /**
- * @brief Permite que um jogador escolha entre jogar uma carta ou pedir truco.
- * @param jogador Um ponteiro para a estrutura 'jogador' do jogador atual.
- * @param valor_partida Ponteiro para o valor atual dos pontos em jogo na rodada.
- * @param vira A carta "vira" da rodada.
+ * @brief Permite que um jogador escolha uma ação (exibir cartas, jogar carta, pedir/aumentar truco).
+ *
+ * Esta função controla o turno de um jogador, oferecendo opções de ação
+ * de acordo com o estado atual do jogo (se o truco foi pedido/aceito).
+ * Ela lida com a entrada do usuário e invoca outras funções para executar a ação escolhida.
+ * Retorna a carta jogada se a opção for jogar uma carta.
+ *
+ * @param jogador Ponteiro para a estrutura 'jogador' que está realizando a ação.
+ * @param valor_partida Ponteiro para o valor atual dos pontos da partida (e.g., 1, 3, 6, 9, 12).
+ * @param vira A carta "vira" da rodada, que define as "manilhas".
  * @param aceitou_truco Ponteiro para um booleano que indica se o truco foi aceito.
- * @param time_que_pediu_truco Ponteiro para o identificador do time que pediu truco (1 ou 2).
+ * @param time_que_pediu_truco Ponteiro para um inteiro que indica qual time pediu truco (0 se ninguém pediu, 1 para Time 1, 2 para Time 2).
  * @param time_atual O identificador do time do jogador atual (1 ou 2).
- * @param proximo_jogador A estrutura 'jogador' do próximo jogador a jogar, utilizada para algumas lógicas de decisão.
- * @return A carta jogada pelo jogador, se ele escolher jogar.
+ * @param proximo_jogador A estrutura 'jogador' do próximo jogador a agir (geralmente o adversário).
+ * @return A estrutura 'carta' que foi jogada pelo jogador.
  */
 struct carta escolher_acao(struct jogador *jogador, int *valor_partida, struct carta vira, bool *aceitou_truco, int *time_que_pediu_truco, int time_atual, struct jogador proximo_jogador);
 
 /**
- * @brief Aumenta o valor da aposta do truco na partida.
- * @param valor_partida Ponteiro para o valor atual dos pontos em jogo na rodada, que será incrementado.
+ * @brief Permite aumentar o valor dos pontos da partida (retruco/vale 6, 9, 12).
+ *
+ * Esta função verifica se é possível aumentar o valor da partida (limite de 12 pontos).
+ * Se sim, pergunta ao jogador se ele aceita o aumento. Caso aceite, o valor da partida
+ * é incrementado em 3 pontos.
+ *
+ * @param valor_partida Ponteiro para o valor atual dos pontos da partida.
+ * @param jogador_que_responde A estrutura 'jogador' que está respondendo ao pedido de aumento.
+ * @param aceitou_truco Ponteiro para um booleano que será definido como true se o aumento for aceito, false caso contrário.
  */
 void aumentar_truco(int *valor_partida, struct jogador jogador_que_responde, bool *aceitou_truco);
 
 /**
- * @brief Embaralha e distribui as cartas para os jogadores e define a carta "vira".
- * @param time_1 Array de 'jogador' para a Equipe 1.
- * @param time_2 Array de 'jogador' para a Equipe 2.
- * @param numero_jogadores_cada_time O número de jogadores em cada equipe.
- * @param cartas_em_jogo Um array para armazenar as cartas que estão em uso no jogo.
- * @param qtd_cartas O número total de cartas no baralho que será usado.
- * @param vira Ponteiro para a carta "vira" da rodada.
+ * @brief Embaralha e distribui cartas aos jogadores, definindo a vira da rodada.
+ *
+ * Esta função prepara uma nova rodada do jogo. Ela zera o registro das cartas em jogo,
+ * distribui três cartas aleatórias e únicas para cada jogador de ambos os times,
+ * e então define a carta "vira", garantindo que ela também seja única.
+ *
+ * @param time_1 Array de estruturas 'jogador' do Time 1.
+ * @param time_2 Array de estruturas 'jogador' do Time 2.
+ * @param numero_jogadores_cada_time O número de jogadores em cada time.
+ * @param cartas_em_jogo Array de estruturas 'carta' que armazena todas as cartas já distribuídas ou viradas.
+ * @param qtd_cartas Quantidade total de cartas que podem estar em jogo (tamanho do array `cartas_em_jogo`).
+ * @param vira Ponteiro para a estrutura 'carta' que representará a vira da rodada.
  */
 void embaralhar(struct jogador time_1[], struct jogador time_2[], int numero_jogadores_cada_time, struct carta cartas_em_jogo[], int qtd_cartas, struct carta *vira);
 
 /**
  * @brief Compara o valor de duas cartas para determinar qual é a maior, considerando a carta "vira".
+ *
+ * Esta função avalia a força de duas cartas de truco, levando em conta a carta "vira"
+ * que define as manilhas. Retorna um caractere indicando se a 'carta_jogada' é maior,
+ * se a 'carta_maior' atual é que prevalece, ou se há um empate.
+ *
  * @param carta_maior A carta atualmente considerada a maior.
  * @param carta_jogada A carta que está sendo comparada.
  * @param vira A carta "vira" da rodada.
- * @return Um caractere indicando o resultado da comparação ('M' se carta_jogada for maior, 'm' se carta_maior for maior, 'E' se forem iguais).
+ * @return Um caractere indicando o resultado da comparação:
+ * - '>' se 'carta_jogada' for maior que 'carta_maior'.
+ * - '<' se 'carta_maior' for maior que 'carta_jogada'.
+ * - '=' se as cartas tiverem o mesmo valor.
  */
 char comparar_cartas(struct carta carta_maior, struct carta carta_jogada, struct carta vira);
 
+/**
+ * @brief Reordena os jogadores de um time para que o jogador vencedor comece a próxima rodada, e ajusta o outro time.
+ *
+ * Esta função é usada no truco para alterar a ordem dos jogadores nos times,
+ * garantindo que o jogador que ganhou a rodada anterior (ou que será o "mão")
+ * do time vencedor comece a próxima. Ela rotaciona os jogadores dentro do array
+ * do time vencedor para que o jogador na `posicao_nova` vá para a primeira posição.
+ * O outro time também tem sua ordem ajustada de forma correspondente.
+ *
+ * @param time1 Array de estruturas 'jogador' do Time 1.
+ * @param time2 Array de estruturas 'jogador' do Time 2.
+ * @param posicao_nova A posição (índice) do jogador vencedor no seu time que deve começar a próxima rodada.
+ * @param time_novo O identificador do time que ganhou a rodada e terá seu jogador inicial ajustado (1 ou 2).
+ * @param qtd_jogadores O número de jogadores em cada time.
+ */
 void trocar_comeca(struct jogador time1[], struct jogador time2[], int posicao_nova, int time_novo, int qtd_jogadores);
 
 /**
- * @brief Gera uma nova carta aleatória e a retorna se ela já não estiver presente no array de cartas em jogo.
- * @param nova_carta A carta que se deseja verificar e potencialmente substituir.
- * @param cartas_em_jogo Um array das cartas já distribuídas ou em uso no jogo.
- * @return Uma nova estrutura 'carta' que não é repetida.
+ * @brief Garante que uma carta gerada não seja repetida no conjunto de cartas em jogo.
+ *
+ * Esta função verifica se a `nova_carta` já existe no array `cartas_em_jogo`.
+ * Se for repetida, uma nova carta aleatória é gerada e o processo se repete
+ * até que uma carta única seja encontrada.
+ *
+ * @param nova_carta A carta gerada inicialmente a ser verificada.
+ * @param cartas_em_jogo Um array de estruturas 'carta' contendo todas as cartas já em uso.
+ * @return Uma estrutura 'carta' que é garantidamente única em relação às 'cartas_em_jogo'.
  */
 struct carta troca_repetida(struct carta nova_carta, struct carta cartas_em_jogo[]);
 
 /**
- * @brief Verifica se uma dada carta já existe no array de cartas em jogo.
- * @param nova_carta A carta a ser verificada.
- * @param cartas_em_jogo Um array das cartas já distribuídas ou em uso no jogo.
- * @return Verdadeiro se a carta for repetida, Falso caso contrário.
+ * @brief Verifica se uma carta já existe no conjunto de cartas em jogo.
+ *
+ * Esta função itera sobre um array de `cartas_em_jogo` para determinar
+ * se a `nova_carta` fornecida já está presente. A busca termina quando
+ * uma carta com `numero == -1` é encontrada, indicando o fim das cartas válidas.
+ *
+ * @param nova_carta A carta a ser verificada quanto à repetição.
+ * @param cartas_em_jogo Um array de estruturas 'carta' que contém as cartas já distribuídas ou viradas.
+ * @return `true` se a `nova_carta` for encontrada no array `cartas_em_jogo`, `false` caso contrário.
  */
 bool eh_repetida(struct carta nova_carta, struct carta cartas_em_jogo[]);
 
 /**
- * @brief Zera (limpa) um array de cartas, geralmente usado para reiniciar as cartas em jogo.
- * @param cartas Um ponteiro para o início do array de estruturas 'carta'.
- * @param qtd O número de cartas no array a serem zeradas.
+ * @brief Zera as cartas em jogo, marcando-as como vazias ou não utilizadas.
+ *
+ * Esta função inicializa (ou "zera") um array de cartas, definindo o campo
+ * 'numero' de cada carta como -1. Isso é útil para limpar o estado do baralho
+ * ou das cartas já distribuídas no início de uma nova rodada ou jogo,
+ * garantindo que não haja resquícios de rodadas anteriores.
+ *
+ * @param cartas Um ponteiro para o primeiro elemento do array de estruturas 'carta' a ser zerado.
+ * @param qtd A quantidade de cartas no array a ser zerada.
  */
 void zerar_cartas_em_jogo(struct carta *cartas, int qtd);
 
 /**
- * @brief Compara duas estruturas 'carta' para verificar se são idênticas (mesmo número e naipe).
- * @param primeira_carta A primeira estrutura 'carta' para comparação.
- * @param segunda_carta A segunda estrutura 'carta' para comparação.
- * @return Verdadeiro se as cartas forem iguais, Falso caso contrário.
+ * @brief Compara duas cartas para verificar se são idênticas (mesmo número e naipe).
+ * @param primeira_carta A primeira carta a ser comparada.
+ * @param segunda_carta A segunda carta a ser comparada.
+ * @return `true` se as cartas forem iguais, `false` caso contrário.
  */
 bool cartas_iguais(struct carta primeira_carta, struct carta segunda_carta);
 
+/**
+ * @brief Copia os dados de um time de jogadores para outro.
+ *
+ * Esta função realiza uma cópia membro a membro dos jogadores do `timeb` para o `timea`.
+ * Isso é útil para, por exemplo, criar um backup do estado de um time ou
+ * para manipular uma cópia sem afetar o original.
+ *
+ * @param timea O array de estruturas 'jogador' de destino (onde os dados serão copiados).
+ * @param timeb O array de estruturas 'jogador' de origem (de onde os dados serão lidos).
+ * @param qtd_jogadores O número de jogadores a serem copiados.
+ */
 void copiar_time(struct jogador timea[], struct jogador timeb[], int quantidade_de_jogadoores);
 
 /**
@@ -472,12 +561,12 @@ void exibir_pontuacao_partida(int pontuacao_time_1, int pontuacao_time_2)
     printf("------------------------\n\n");
 }
 
-void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontuacao_time_1, int pontuacao_time_2, int qtd_jagadores_cada_time)
+void finalizar_jogo(struct jogador time_1[], struct jogador time_2[], int pontuacao_time_1, int pontuacao_time_2, int qtd_jogadores_cada_time)
 {
     if (pontuacao_time_1 > pontuacao_time_2)
-        exibir_ganhador(time_1, qtd_jagadores_cada_time);
+        exibir_ganhador(time_1, qtd_jogadores_cada_time);
     else
-        exibir_ganhador(time_2, qtd_jagadores_cada_time);
+        exibir_ganhador(time_2, qtd_jogadores_cada_time);
 
     exibir_pontuacao_final(pontuacao_time_1, pontuacao_time_2);
 }
